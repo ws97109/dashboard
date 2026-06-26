@@ -1,0 +1,61 @@
+/* 卡片樣式 */
+.dashboard__card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.dashboard__card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+.card__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.card__title::before {
+    content: '';
+    width: 4px;
+    height: 30px;
+    background: linear-gradient(180deg, var(--primary-red) 0%, var(--dark-red) 100%);
+    border-radius: 4px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.section-title::before {
+    content: '';
+    width: 4px;
+    height: 30px;
+    background: linear-gradient(180deg, var(--primary-color), var(--dark-color));
+    border-radius: 4px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .dashboard__card {
+        padding: 1.5rem;
+    }
+
+    .card__title,
+    .section-title {
+        font-size: 1.2rem;
+    }
+}

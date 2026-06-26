@@ -1,0 +1,261 @@
+<!-- page/p1.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前置作業 - 詳細進度</title>
+    
+    <link rel="stylesheet" href="../fonts/fonts.css">
+    
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/card.css">
+    <link rel="stylesheet" href="../css/modal.css">
+    <link rel="stylesheet" href="../css/page.css">
+</head>
+<body>
+    <div id="_layout_header"></div>
+    <div id="_page_navBar"></div>
+
+    <div class="container">
+        <div class="progress-summary">
+            <div class="progress-summary__header">
+                <h2 class="progress-summary__title">
+                    進度總覽
+                    <span class="progress-summary__badge">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                        前置作業
+                    </span>
+                </h2>
+            </div>
+            <div class="progress-summary__stats" id="progressSummaryStats"></div>
+        </div>
+
+        <div class="tasks-section">
+            <h3 class="section-title">任務狀態</h3>
+            
+            <div class="task-toolbar">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜尋任務名稱或負責人員...">
+                </div>
+                <div class="system-code-filter-wrap">
+                    <span class="system-code-filter-label">系統代碼</span>
+                    <input type="text" id="systemCodeInput" list="systemCodeList"
+                           class="system-code-input" placeholder="全部系統">
+                    <datalist id="systemCodeList"></datalist>
+                    <button class="system-code-clear-btn" id="systemCodeClearBtn" title="清除篩選">✕</button>
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="notStarted">未開始</button>
+                    <button class="filter-btn" data-filter="inProgress">進行中</button>
+                    <button class="filter-btn" data-filter="overdue">已逾期</button>
+                    <button class="filter-btn" data-filter="completed">已完成</button>
+                </div>
+            </div>
+
+            <div class="task-sections">
+                <div class="task-section-container full-width" id="allSection">
+                    <div class="task-section-header">
+                        <div class="task-section-title all">📋 全部任務</div>
+                        <span class="task-count" id="allCount">0</span>
+                    </div>
+                    <div class="task-list" id="allTaskList"></div>
+                </div>
+
+                <div class="task-section-container hidden" id="notStartedSection">
+                    <div class="task-section-header">
+                        <div class="task-section-title" style="color: #6b7280;">⏸ 未開始任務</div>
+                        <span class="task-count" id="notStartedCount">0</span>
+                    </div>
+                    <div class="task-list" id="notStartedTaskList"></div>
+                </div>
+
+                <div class="task-section-container hidden" id="inProgressSection">
+                    <div class="task-section-header">
+                        <div class="task-section-title" style="color: #3b82f6;">⏳ 進行中任務</div>
+                        <span class="task-count" id="inProgressCount">0</span>
+                    </div>
+                    <div class="task-list" id="inProgressTaskList"></div>
+                </div>
+
+                <div class="task-section-container hidden" id="overdueSection">
+                    <div class="task-section-header">
+                        <div class="task-section-title overdue">⚠ 已逾期任務</div>
+                        <span class="task-count" id="overdueCount">0</span>
+                    </div>
+                    <div class="task-list" id="overdueTaskList"></div>
+                </div>
+
+                <div class="task-section-container hidden" id="completedSection">
+                    <div class="task-section-header">
+                        <div class="task-section-title completed">✅ 已完成任務</div>
+                        <span class="task-count" id="completedCount">0</span>
+                    </div>
+                    <div class="task-list" id="completedTaskList"></div>
+                </div>
+            </div>
+
+            <div class="pagination" id="pagination">
+                <button class="pagination-btn" id="prevPage">‹ 上一頁</button>
+                <div id="pageNumbers" class="page-numbers"></div>
+                <button class="pagination-btn" id="nextPage">下一頁 ›</button>
+                <div class="page-jump">
+                    <span class="page-jump-label">跳至</span>
+                    <input type="number" id="pageJumpInput" min="1" value="1" class="page-jump-input" />
+                    <span class="page-jump-label">頁</span>
+                    <button class="page-jump-btn" id="pageJumpBtn">GO</button>
+                </div>
+                <span class="pagination-info" id="pageInfo"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 實際開始日期 Modal -->
+    <div class="modal-overlay" id="startDateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon" style="background: #3b82f6;">📅</div>
+                <div class="modal-title">設定/修改實際開始日期</div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-task-name" id="startDateModalTaskName"></div>
+                <div class="modal-form-group">
+                    <label class="modal-label">
+                        請輸入實際開始日期時間 <span style="color: var(--primary-color);">*</span>
+                    </label>
+                    <!-- 日期選擇 -->
+                    <input type="date" id="modalStartDate_date" class="modal-input" style="width:100%; margin-bottom:8px;">
+                    <!-- 時間選擇：日期填入後才顯示 -->
+                    <div id="customTimeSelects" style="display:none; gap:8px; align-items:center;">
+                        <select id="modalStartDate_hour" class="modal-input" style="flex:1;"></select>
+                        <span style="color:var(--text-light); font-size:1.1rem; padding:0 2px;">時</span>
+                        <select id="modalStartDate_min" class="modal-input" style="flex:1;"></select>
+                        <span style="color:var(--text-light); font-size:1.1rem; padding:0 2px;">分</span>
+                    </div>
+                    <!-- 組合後的隱藏值，供 JS 讀取 -->
+                    <input type="hidden" id="modalStartDate">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="pPage.cancelStartDate()">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="startDateConfirmBtn" onclick="pPage.confirmStartDate()">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 完成任務 Modal -->
+    <div class="modal-overlay" id="completeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">✓</div>
+                <div class="modal-title">完成任務確認</div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-task-name" id="modalTaskName"></div>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="modalActualDate">
+                        請輸入實際完成日期時間<span style="color: var(--primary-color);">*</span>
+                    </label>
+                    <input type="datetime-local" step="60" id="modalActualDate" class="modal-input" required>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="pPage.cancelComplete()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="pPage.confirmComplete()">確認完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 進度說明新增 Modal -->
+    <div class="modal-overlay" id="noteModal" style="display:none;"></div>
+    <div class="modal-overlay" id="memoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon" style="background: #f59e0b;">📝</div>
+                <div class="modal-title">新增進度說明</div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-task-name" id="memoModalTaskName"></div>
+                <div class="modal-form-group">
+                    <label class="modal-label">進度說明內容</label>
+                    <textarea id="memoModalText" class="modal-input" rows="5"
+                        placeholder="請輸入進度說明..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="pPage.cancelMemoModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="memoModalSaveBtn"
+                    onclick="pPage.saveMemoModal()">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 取消完成 Modal -->
+    <div class="modal-overlay" id="uncompleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon warning">⚠</div>
+                <div class="modal-title">取消完成確認</div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-task-name" id="uncompleteModalTaskName"></div>
+                <p style="color: var(--text-light); margin-top: 1rem;">確定要將此任務標記為未完成嗎?實際完成日期將被清除。</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="pPage.cancelUncomplete()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="pPage.confirmUncomplete()">確認取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 前置任務 Modal -->
+    <div class="modal-overlay" id="prereqModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon" style="background: #6366f1;">🔗</div>
+                <div class="modal-title" id="prereqModalTitle">新增前置任務</div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-task-name" id="prereqModalTaskName"></div>
+                <div class="modal-form-group">
+                    <label class="modal-label">前置任務代碼 <span style="color: var(--primary-color);">*</span></label>
+                    <input type="text" id="prereqMemoInput" class="modal-input" placeholder="例如：BANCS-1">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="pPage.cancelPrerequisite()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="pPage.savePrerequisite()">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="_layout_footer"></div>
+
+    <script>
+    window._layoutConfig = {
+        root: '../',
+        navBar: {
+            title: '前置作業 - 詳細進度',
+            backLinks: [
+                { href: '../index.html', text: '← 返回總覽' },
+                { href: '../page/group1.html', text: '← 返回組別選擇' }
+            ]
+        }
+    };
+    </script>
+    <script src="../js/authToken.js"></script>
+<script>
+  (function() { if (!window.getAuthToken()) { window.location.replace('../login.html'); } })();
+</script>
+	<script src="../js/layout.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/dataLoader.js"></script>
+    <script src="../js/pPage.js" data-pageid="1"></script>
+</body>
+</html>

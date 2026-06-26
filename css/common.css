@@ -1,0 +1,128 @@
+/* 共用 CSS 變數和基礎樣式 */
+:root {
+    --primary-red: #dc2626;
+    --dark-red: #991b1b;
+    --light-red: #fee2e2;
+    --primary-color: #ef4444;
+    --dark-color: #991b1b;
+    --light-color: #fee2e2;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-gray: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 10px 30px rgba(220, 38, 38, 0.1);
+    --shadow-lg: 0 20px 50px rgba(220, 38, 38, 0.15);
+    --success-color: #10b981;
+    --success-light: #d1fae5;
+    --warning-color: #f59e0b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: linear-gradient(135deg, var(--bg-gray) 0%, #ffffff 100%);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+}
+
+/* 共用動畫 */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* 按鈕樣式 */
+._btn {
+    color: var(--white); /* Ensure text is visible */
+    background-color: var(--primary-red); /* Set a strong red background */
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: var(--shadow);
+}
+
+._btn:hover {
+    background-color: var(--warning-color); /* Add a hover effect with a warning color */
+}
+
+._btn:active {
+    background-color: var(--dark-red); /* Add an active effect with a darker red */
+}
+.dashboard_btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    border: 2px solid var(--primary-red);
+    background: var(--primary-red);
+    color: var(--white);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.dashboard_btn:hover {
+    background: var(--dark-red);
+    border-color: var(--dark-red);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* 內嵌在 progress-summary__title 的 Dashboard 按鈕 */
+.dashboard_btn--inline {
+    padding: 0.35rem 1rem;
+    font-size: 0.82rem;
+    vertical-align: middle;
+    margin-left: 0.6rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .dashboard_btn--inline {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.6rem;
+        width: fit-content;
+        font-size: 0.78rem;
+        padding: 0.3rem 0.85rem;
+    }
+}

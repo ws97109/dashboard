@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>登入 - 台新國際商業銀行</title>
+
+    <link rel="stylesheet" href="fonts/fonts.css">
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div id="_layout_header"></div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-card__header">
+                <h1 class="login-card__title">會員登入</h1>
+                <p class="login-card__subtitle">台新新光合併案追蹤系統</p>
+            </div>
+
+            <!-- Password Management: Insecure Submission 防護：
+                 1. <head> 已設 CSP upgrade-insecure-requests 強制 HTTPS
+                 2. onsubmit="return false;" 防止瀏覽器原生 HTTP 表單提交；
+                    實際送出由 login.js 的 fetch() 以 same-origin credentials 處理 -->
+            <form id="loginForm" class="login-form" onsubmit="return false;" method="post">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <span class="label-text">員工編號</span>
+                        <span class="label-hint">英文/數字</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            maxlength="10"
+                            required 
+                            placeholder="請輸入員工編號"
+                            autocomplete="username">
+                    </div>
+                    <span class="form-error" id="usernameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="custid" class="form-label">
+                        <span class="label-text">密碼</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="custid"
+                            name="custid"
+                            required 
+                            placeholder="請輸入 AD 網域密碼"
+                            autocomplete="current-password">
+                        <span class="input-icon toggle-password" id="togglePassword">🔒</span>
+                    </div>
+                    <span class="form-error" id="passwordError"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span>登入</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="_layout_footer"></div>
+
+    <script>window._layoutConfig = { root: '' };</script>
+    <script src="js/authToken.js"></script>
+	<script src="js/layout.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

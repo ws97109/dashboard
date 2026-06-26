@@ -1,0 +1,2041 @@
+/* p1 頁面專用樣式 */
+
+/* 主容器 */
+.container {
+    max-width: 1400px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+/* 進度摘要 */
+.progress-summary {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.progress-summary__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.progress-summary__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-summary__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    color: white;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.progress-summary__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--bg-gray), var(--white));
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.stat-card__value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card__label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.gauge-marks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.gauge-mark {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    left: 50%;
+    transform-origin: 0 140px;
+}
+
+.gauge-mark.major {
+    height: 15px;
+    width: 3px;
+    background: rgba(0, 0, 0, 0.15);
+}
+/* 篩選區塊樣式 */
+.filter-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filter-subtitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #1f2937);
+    margin-bottom: 1rem;
+}
+
+.company-filter,
+.group-filter {
+    margin-bottom: 1.5rem;
+}
+
+.group-filter:last-child {
+    margin-bottom: 0;
+}
+
+.company-buttons,
+.group-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.company-btn,
+.group-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.company-btn:hover,
+.group-btn:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.company-btn.active,
+.group-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.company-btn.active:hover,
+.group-btn.active:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+/* 清除所有篩選按鈕 */
+.clear-filter-btn {
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.clear-filter-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* 當前篩選條件顯示 */
+.current-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #eff6ff;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: #1e40af;
+}
+
+.current-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.current-filter-label {
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.current-filter-value {
+    color: #3b82f6;
+    flex: 1;
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-tag {
+    padding: 0.25rem 0.75rem;
+    background: #3b82f6;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* 逾期任務樣式 */
+.task-item.overdue {
+    border: 2px solid #fecaca;
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+}
+
+.task-item.overdue:hover {
+    border-color: #ef4444;
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+}
+
+.task-item.overdue .task-checkbox {
+    border-color: #ef4444;
+}
+
+.task-item.overdue .task-name {
+    color: #991b1b;
+}
+
+.overdue-date {
+    position: relative;
+}
+
+.overdue-date .task-meta-label {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.overdue-badge {
+    background: #fd0202;
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
+    font-weight: 600;
+}
+
+.overdue-ing {
+    background: #186dec;
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
+    font-weight: 600;
+}
+
+.overdue-notyet {
+    background: #6b7280;
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
+    font-weight: 600;
+}
+
+.overdue-ok {
+    background: #068116;
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
+    font-weight: 600;
+}
+
+.overdue-date input[type="date"] {
+    border-color: #fca5a5;
+    background: #fef2f2;
+    color: #991b1b;
+    font-weight: 600;
+}
+
+/* 當前篩選條件顯示 */
+.current-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #eff6ff;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: #1e40af;
+}
+
+.current-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.current-filter-label {
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.current-filter-value {
+    color: #3b82f6;
+    flex: 1;
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-tag {
+    padding: 0.25rem 0.75rem;
+    background: #3b82f6;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+/* 任務區域 */
+.tasks-section {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+/* 工具列 */
+.task-toolbar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.search-box::before {
+    content: '🔍';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e5e7eb;
+    background: var(--white);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--light-color);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* 任務區域容器 */
+.task-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.task-section-container {
+    background: var(--bg-gray);
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-height: 400px;
+    transition: all 0.3s ease;
+}
+
+.task-section-container.hidden {
+    display: none;
+}
+
+.task-section-container.full-width {
+    grid-column: 1 / -1;
+}
+
+.task-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.task-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.task-section-title.pending {
+    color: var(--primary-color);
+}
+
+.task-section-title.completed {
+    color: var(--success-color);
+}
+
+.task-count {
+    background: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.task-item {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    animation: slideIn 0.4s ease-out backwards;
+}
+
+.task-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+.task-item.completed {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+.task-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.task-checkbox {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 3px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    background: var(--white);
+    cursor: pointer;
+}
+
+.task-item.completed .task-checkbox {
+    background: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.task-checkbox svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.task-item.completed .task-checkbox svg {
+    opacity: 1;
+}
+
+.task-content {
+    flex: 1;
+}
+
+.task-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.task-systemCode {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+.task-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+}
+
+.task-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.task-meta-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.task-meta-value {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.task-meta-value input[type="date"] {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.task-meta-value input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.task-meta-value input[type="date"]:disabled {
+    background: #f9fafb;
+    cursor: not-allowed;
+}
+
+/* 分頁控制 */
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e5e7eb;
+}
+
+.pagination-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e5e7eb;
+    background: var(--white);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    background: var(--light-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.pagination-info {
+    padding: 0.25rem 0.5rem;
+    color: var(--text-light);
+    font-size: 0.8rem;
+    width: 100%;
+    text-align: center;
+    margin-top: 0.25rem;
+}
+
+/* ── 頁碼按鈕 ─────────────────────────────────────────── */
+.page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.page-number-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #e5e7eb;
+    background: var(--white);
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--text-dark);
+    flex-shrink: 0;
+}
+
+.page-number-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--light-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.page-number-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    transform: none;
+}
+
+.page-ellipsis {
+    width: 28px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 1rem;
+    user-select: none;
+    letter-spacing: 1px;
+}
+
+/* ── 跳頁區 ───────────────────────────────────────────── */
+.page-jump {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: 0.25rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid #e5e7eb;
+}
+
+.page-jump-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    white-space: nowrap;
+}
+
+.page-jump-input {
+    width: 52px;
+    height: 34px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.page-jump-input:focus {
+    border-color: var(--primary-color);
+}
+
+.page-jump-input::-webkit-inner-spin-button,
+.page-jump-input::-webkit-outer-spin-button {
+    opacity: 1;
+}
+
+.page-jump-btn {
+    padding: 0.35rem 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+    white-space: nowrap;
+}
+
+.page-jump-btn:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+}
+
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-light);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state-text {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+    .task-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .task-section-container.full-width {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1.5rem;
+        margin: 2rem auto;
+    }
+
+    .progress-summary,
+    .tasks-section,
+    .liquid-gauge-section {
+        padding: 1.5rem;
+    }
+
+    .progress-summary__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .progress-summary__title {
+        font-size: 1.4rem;
+    }
+
+    .progress-summary__stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .task-toolbar {
+        flex-direction: column;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .filter-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .system-code-filter-wrap {
+        width: 100%;
+    }
+
+    .system-code-input {
+        flex: 1;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .task-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-jump {
+        display: none;
+    }
+
+    .page-number-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .page-numbers {
+        gap: 0.15rem;
+    }
+}
+/* 進度說明按鈕 */
+.task-note-btn {
+    padding: 0.5rem 1rem;
+    background: hsl(221, 86%, 66%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.task-note-btn:hover {
+    background: hsl(239, 87%, 57%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.task-note-btn.has-note {
+    background: #10b981;
+}
+
+.task-note-btn.has-note:hover {
+    background: #059669;
+}
+/* 任務項目需要相對定位 */
+.task-item {
+    position: relative;
+}
+
+/* 備註展開區域 */
+.task-note-expanded {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}
+
+.task-note-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.task-note-content {
+    color: #78350f;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.task-note-empty {
+    color: #a16207;
+    font-style: italic;
+}
+
+.task-note-timestamp {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #fde68a;
+    font-size: 0.75rem;
+    color: #a16207;
+}
+/* p1 頁面專用樣式 */
+
+.container {
+    max-width: 1400px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.progress-summary {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.progress-summary__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.progress-summary__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-summary__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    color: white;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.progress-summary__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--bg-gray), var(--white));
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.stat-card__label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.tasks-section {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.task-toolbar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.search-box::before {
+    content: '🔍';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e5e7eb;
+    background: var(--white);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--light-color);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* ── 系統代碼篩選（input + datalist）── */
+.system-code-filter-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.system-code-filter-label {
+    font-size: 0.9rem;
+    color: var(--text-light, #6b7280);
+    white-space: nowrap;
+    font-weight: 500;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+.system-code-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--white, #fff);
+    color: var(--text-primary, #111827);
+    min-width: 120px;
+    max-width: 200px;
+    transition: all 0.3s ease;
+}
+
+.system-code-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.system-code-clear-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-light, #6b7280);
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    line-height: 1.5;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+.system-code-clear-btn:hover {
+    background: rgba(0, 0, 0, 0.07);
+    color: var(--primary-color, #e63946);
+}
+
+.task-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.task-section-container {
+    background: var(--bg-gray);
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-height: 400px;
+    transition: all 0.3s ease;
+}
+
+.task-section-container.hidden {
+    display: none;
+}
+
+.task-section-container.full-width {
+    grid-column: 1 / -1;
+}
+
+.task-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.task-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.task-section-title.pending {
+    color: var(--primary-color);
+}
+
+.task-section-title.completed {
+    color: var(--success-color);
+}
+
+.task-section-title.overdue {
+    color: var(--warning-color);
+}
+
+.task-count {
+    background: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.task-item {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    animation: slideIn 0.4s ease-out backwards;
+    position: relative;
+}
+
+.task-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+.task-item.completed {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+}
+
+.task-item.overdue {
+    border: 2px solid #fecaca;
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+}
+
+.task-item.overdue:hover {
+    border-color: #ef4444;
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+}
+
+.task-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.task-checkbox {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 3px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    background: var(--white);
+    cursor: pointer;
+}
+
+.task-item.completed .task-checkbox {
+    background: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.task-item.overdue .task-checkbox {
+    border-color: #ef4444;
+}
+
+.task-checkbox svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.task-item.completed .task-checkbox svg {
+    opacity: 1;
+}
+
+.task-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+
+.task-item.overdue .task-name {
+    color: #991b1b;
+}
+
+.task-systemCode {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+.task-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+}
+
+.task-meta-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.overdue-date .task-meta-label {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.task-meta-value {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.task-meta-value input[type="date"] {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.task-meta-value input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.task-meta-value input[type="date"]:disabled {
+    background: #f9fafb;
+    cursor: not-allowed;
+}
+
+.overdue-date input[type="date"] {
+    border-color: #fca5a5;
+    background: #fef2f2;
+    color: #991b1b;
+    font-weight: 600;
+}
+
+.task-note-btn:hover {
+    background: hsl(239, 87%, 57%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.task-note-btn.has-note {
+    background: #10b981;
+}
+
+.task-note-btn.has-note:hover {
+    background: #059669;
+}
+
+.task-note-expanded {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}
+
+.task-note-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.task-note-content {
+    color: #78350f;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.task-note-empty {
+    color: #a16207;
+    font-style: italic;
+}
+
+.task-note-timestamp {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #fde68a;
+    font-size: 0.75rem;
+    color: #a16207;
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e5e7eb;
+}
+
+.pagination-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e5e7eb;
+    background: var(--white);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    background: var(--light-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    padding: 0.25rem 0.5rem;
+    color: var(--text-light);
+    font-size: 0.8rem;
+    width: 100%;
+    text-align: center;
+    margin-top: 0.25rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-light);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state-text {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+    .task-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .task-section-container.full-width {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1.5rem;
+        margin: 2rem auto;
+    }
+
+    .progress-summary,
+    .tasks-section {
+        padding: 1.5rem;
+    }
+
+    .progress-summary__stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .task-toolbar {
+        flex-direction: column;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .filter-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .system-code-filter-wrap {
+        width: 100%;
+    }
+
+    .system-code-input {
+        flex: 1;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .task-meta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* 在 css/page.css 中加入 */
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.breadcrumb a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* 已逾期標題樣式 */
+.task-section-title.overdue {
+    color: #dc2626;
+}
+/* 日期時間顯示樣式 */
+.datetime-display {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--text-dark);
+    background: #f9fafb;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* datetime-local 輸入樣式 */
+input[type="datetime-local"] {
+    padding: 0.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+input[type="datetime-local"]:disabled {
+    background: #f9fafb;
+    cursor: not-allowed;
+}
+/* 日期時間文字顯示樣式 */
+.datetime-display {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--text-dark);
+    background: #f9fafb;
+    padding: 0.5rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border: 1px solid #e5e7eb;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* 可點擊的日期顯示 */
+.datetime-display.clickable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.datetime-display.clickable:hover {
+    background: #e0f2fe;
+    border-color: #3b82f6;
+    color: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+/* 設定日期按鈕 */
+.set-date-btn {
+    padding: 0.5rem 1rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+    width: 100%;
+    min-height: 36px;
+}
+
+.set-date-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ── 進度說明 inline 列表樣式 ────────────────────────────── */
+.task-memo-section {
+    margin-top: 1rem;
+    padding: 1rem 1.2rem;
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.task-memo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.task-memo-item {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+
+.task-memo-time {
+    font-size: 0.78rem;
+    color: #a16207;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.task-memo-content {
+    font-size: 0.9rem;
+    color: #78350f;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 0.4rem;
+}
+
+.task-memo-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.task-memo-del-btn {
+    padding: 0.25rem 0.7rem;
+    background: transparent;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+    white-space: nowrap;
+}
+
+.task-memo-del-btn:hover {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: #d97706;
+    color: #78350f;
+}
+
+.task-memo-add-row {
+    margin-top: 0.6rem;
+}
+
+.task-memo-add-btn {
+    padding: 0.4rem 1rem;
+    background: rgba(245, 158, 11, 0.15);
+    color: #92400e;
+    border: 1.5px solid #f59e0b;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+    white-space: nowrap;
+}
+
+.task-memo-add-btn:hover {
+    background: rgba(245, 158, 11, 0.3);
+    border-color: #d97706;
+    color: #78350f;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25);
+}
+
+@media (max-width: 480px) {
+    .task-memo-item {
+        padding: 0.6rem 0.75rem;
+    }
+    .task-memo-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+/* ── end 進度說明 inline 列表樣式 ─────────────────────────── */
+
+.task-buttons-container {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+/* 更新進度按鈕 */
+.task-update-btn {
+    padding: 0.5rem 1rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.task-update-btn:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+@media (max-width: 768px) {
+    .task-buttons-container {
+        position: static;
+        flex-direction: row;
+        justify-content: flex-end;
+        margin-bottom: 1rem;
+    }
+    
+    .task-update-btn,
+    .task-note-btn {
+        min-width: auto;
+        flex: 1;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .task-buttons-container {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .task-update-btn,
+    .task-note-btn {
+        width: 100%;
+    }
+}
+
+/* ── 前置任務區塊樣式 (深色系) ────────────────────────────── */
+.task-prereq-wrapper {
+    margin-top: 0.9rem;
+    padding: 0.6rem 0.85rem;
+    background: rgba(15, 20, 35, 0.55);
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    border-left: 3px solid #3b82f6;
+    border-radius: 0.5rem;
+    backdrop-filter: blur(4px);
+}
+
+.task-prereq-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.task-prereq-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.task-prereq-loading {
+    font-size: 0.82rem;
+    color: #60a5fa;
+    opacity: 0.6;
+}
+
+.task-prereq-empty {
+    font-size: 0.82rem;
+    color: rgba(148, 163, 184, 0.45);
+}
+
+.task-prereq-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.task-prereq-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    border-radius: 999px;
+    padding: 0.18rem 0.75rem;
+    font-size: 0.82rem;
+    color: #93c5fd;
+    font-weight: 600;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 0.03em;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.task-prereq-item:hover {
+    background: rgba(30, 58, 95, 0.9);
+    border-color: rgba(96, 165, 250, 0.6);
+}
+
+.prereq-code {
+    white-space: nowrap;
+}
+
+.prereq-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 0.15rem;
+    font-size: 0.8rem;
+    line-height: 1;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+}
+
+.prereq-btn:hover {
+    opacity: 1;
+}
+
+.prereq-edit-btn { color: #7dd3fc; }
+.prereq-del-btn  { color: #f87171; }
+
+.prereq-add-btn {
+    margin-top: 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px dashed rgba(96, 165, 250, 0.35);
+    border-radius: 0.4rem;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #60a5fa;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.prereq-add-btn:hover {
+    background: rgba(30, 58, 95, 0.75);
+    border-color: rgba(96, 165, 250, 0.6);
+    color: #93c5fd;
+}
+
+@media (max-width: 640px) {
+    .task-prereq-list {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    .task-prereq-item {
+        width: 100%;
+        border-radius: 0.4rem;
+    }
+}
+/* ── end 前置任務區塊樣式 ─────────────────────────────────── */
+
+/* ── 前置任務 Hyperlink ───────────────────────────────────── */
+.prereq-task-link {
+    color: #60a5fa;
+    text-decoration: underline dotted;
+    font-weight: 600;
+    transition: color 0.15s;
+}
+.prereq-task-link:hover {
+    color: #93c5fd;
+    text-decoration: underline solid;
+}
+.prereq-task-status {
+    font-size: 0.85em;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+/* ── 任務 Highlight（從前置任務跳轉後閃爍）──────────────────── */
+@keyframes taskHighlightPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); background: rgba(250, 204, 21, 0.15); }
+    50%  { box-shadow: 0 0 0 8px rgba(250, 204, 21, 0);  background: rgba(250, 204, 21, 0.08); }
+    100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);    background: transparent; }
+}
+.task-item.task-highlight {
+    animation: taskHighlightPulse 1.2s ease-out 3;
+    border-color: #facc15 !important;
+}
+/* ── end 前置任務 Hyperlink ──────────────────────────────── */
+
+/* ── 重要任務 stat card ────────────────────────────────────── */
+a.stat-card--important,
+.stat-card--important {
+    text-decoration: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    position: relative;
+    overflow: hidden;
+}
+
+a.stat-card--important:hover,
+.stat-card--important:hover {
+    background: linear-gradient(135deg, #fde68a, #fbbf24);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.35);
+}
+
+.stat-card__important-badge {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #92400e;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+}
+
+.stat-card__value--important {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #d97706, #92400e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+
+a.stat-card--important .stat-card__label,
+.stat-card--important .stat-card__label {
+    font-size: 0.88rem;
+    color: #78350f;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .stat-card__value--important {
+        font-size: 2rem;
+    }
+}
+/* ── end 重要任務 stat card ─────────────────────────────────── */

@@ -1,0 +1,335 @@
+﻿<!-- page/operation-log.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作歷程記錄 - 台新國際商業銀行</title>
+
+    <link rel="stylesheet" href="../fonts/fonts.css">
+
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/page.css">
+
+    <style>
+        /* ── 篩選區 ─────────────────────────────── */
+        .log-filter-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem 2.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        .log-filter-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .log-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem 1.5rem;
+        }
+        .log-filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .log-filter-field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-medium);
+            letter-spacing: 0.05em;
+        }
+        .log-filter-field input,
+        .log-filter-field select {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #f8fafc;
+            color: var(--text-dark);
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+        .log-filter-field input:focus,
+        .log-filter-field select:focus {
+            outline: none;
+            border-color: #ef4444;
+            background: #fff;
+        }
+        .log-filter-actions {
+            margin-top: 1.2rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .log-btn {
+            padding: 0.55rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .log-btn:hover  { opacity: 0.85; transform: translateY(-1px); }
+        .log-btn:active { transform: translateY(0); }
+        .log-btn--primary { background: #ef4444; color: #fff; }
+        .log-btn--ghost   { background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; }
+
+        /* ── 表格區 ─────────────────────────────── */
+        .log-table-card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        .log-table-header {
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .log-table-header__title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .log-table-wrapper {
+            overflow-x: auto;
+        }
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .log-table thead tr {
+            background: #f8fafc;
+        }
+        .log-th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: #64748b;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+            border-bottom: 1.5px solid #e2e8f0;
+        }
+        .log-td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            vertical-align: top;
+            word-break: break-all;
+        }
+        .log-td--id   { color: #94a3b8; font-size: 0.78rem; white-space: nowrap; }
+        .log-td--time { white-space: nowrap; font-size: 0.83rem; }
+        .log-td--value {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .log-table tbody tr:hover { background: #fef7f7; }
+        .log-null { color: #cbd5e1; }
+        .log-empty {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        .log-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        /* ── 分頁 ─────────────────────────────── */
+        .log-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        .log-pagination__info {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .log-pagination button {
+            padding: 0.4rem 1rem;
+            border-radius: 7px;
+            border: 1.5px solid #cbd5e1;
+            background: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #475569;
+            transition: all 0.2s;
+        }
+        .log-pagination button:hover:not(:disabled) { background: #f1f5f9; }
+        .log-pagination button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        /* ── 錯誤訊息 ─────────────────────────────── */
+        #errorMsg {
+            display: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* ── Loading ─────────────────────────────── */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.18);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .log-spinner {
+            width: 48px; height: 48px;
+            border: 5px solid #fff;
+            border-top-color: #ef4444;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay"><div class="log-spinner"></div></div>
+
+<div id="_layout_header"></div>
+<div id="_page_navBar"></div>
+
+<div class="container">
+
+    <!-- 錯誤訊息 -->
+    <div id="errorMsg"></div>
+
+    <!-- 篩選區 -->
+    <div class="log-filter-card">
+        <div class="log-filter-card__title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+            條件篩選
+        </div>
+        <div class="log-filter-grid">
+            <div class="log-filter-field">
+                <label>對象類型 (Entity Type)</label>
+                <select id="filterEntityType">
+                    <option value="">— 全部 —</option>
+                </select>
+            </div>
+            <div class="log-filter-field">
+                <label>操作類型 (Action)</label>
+                <select id="filterAction">
+                    <option value="">— 全部 —</option>
+                </select>
+            </div>
+            <div class="log-filter-field">
+                <label>操作人員 (員工編號)</label>
+                <input type="text" id="filterOperatedBy" placeholder="輸入員工編號...">
+            </div>
+            <div class="log-filter-field">
+                <label>關鍵字 (Entity ID / 備註)</label>
+                <input type="text" id="filterKeyword" placeholder="關鍵字搜尋...">
+            </div>
+            <div class="log-filter-field">
+                <label>起始日期</label>
+                <input type="date" id="filterDateFrom">
+            </div>
+            <div class="log-filter-field">
+                <label>結束日期</label>
+                <input type="date" id="filterDateTo">
+            </div>
+        </div>
+        <div class="log-filter-actions">
+            <button class="log-btn log-btn--primary" id="btnSearch">🔍 搜尋</button>
+            <button class="log-btn log-btn--ghost"   id="btnReset">↺ 清除條件</button>
+        </div>
+    </div>
+
+    <!-- 資料表格 -->
+    <div class="log-table-card">
+        <div class="log-table-header">
+            <span class="log-table-header__title">查詢結果</span>
+        </div>
+        <div class="log-table-wrapper">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th class="log-th">Log ID</th>
+                        <th class="log-th">操作時間</th>
+                        <th class="log-th">操作類型</th>
+                        <th class="log-th">對象類型</th>
+                        <th class="log-th">對象 ID</th>
+                        <th class="log-th">異動欄位</th>
+                        <th class="log-th">異動前</th>
+                        <th class="log-th">異動後</th>
+                        <th class="log-th">操作人 (員工編號)</th>
+                        <th class="log-th">來源 IP</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody">
+                    <tr>
+                        <td colspan="10" class="log-empty">請設定條件並點擊搜尋</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="log-pagination">
+            <span class="log-pagination__info" id="pageInfo">—</span>
+            <button id="btnPrev" disabled>＜ 上一頁</button>
+            <button id="btnNext" disabled>下一頁 ＞</button>
+        </div>
+    </div>
+
+    <div id="_layout_footer"></div>
+
+    <script>
+    window._layoutConfig = {
+        root: '../',
+        navBar: {
+            title: '操作歷程記錄',
+            backLinks: [{ href: '../index.html', text: '← 返回總覽' }]
+        }
+    };
+    </script>
+    <script src="../js/authToken.js"></script>
+<script>
+  (function() { if (!window.getAuthToken()) { window.location.replace('../login.html'); } })();
+</script>
+	<script src="../js/layout.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/operationLogPage.js"></script>
+</body>
+</html>

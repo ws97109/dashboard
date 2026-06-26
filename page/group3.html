@@ -1,0 +1,70 @@
+﻿<!-- group/group3.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料轉置/系統切轉 - 選擇組別</title>
+    
+    <link rel="stylesheet" href="../fonts/fonts.css">
+    
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/card.css">
+    <link rel="stylesheet" href="../css/group.css">
+    <link rel="stylesheet" href="../css/page.css">
+</head>
+<body>
+    <div id="_layout_header"></div>
+    <div id="_page_navBar"></div>
+
+    <div class="container">
+        <div class="progress-summary">
+            <div class="progress-summary__header">
+                <h2 class="progress-summary__title">進度總覽</h2>
+                <a href="check-sum.html"
+                   style="display:inline-flex; align-items:center; gap:0.4rem;
+                          padding:0.45rem 1.1rem; background:#ef4444; color:#fff;
+                          border-radius:8px; font-size:0.875rem; font-weight:600;
+                          text-decoration:none; transition:opacity 0.2s;"
+                   onmouseover="this.style.opacity='0.85'"
+                   onmouseout="this.style.opacity='1'">
+                    ✅ Check sum 總表
+                </a>
+            </div>
+            <div class="progress-summary__stats" id="progressSummaryStats"></div>
+        </div>
+
+        <div class="selection-section">
+            <h2 class="section-title">請選擇公司</h2>
+            <div class="company-cards" id="companyCards"></div>
+        </div>
+
+        <div class="selection-section" id="groupSection" style="display: none;">
+            <h2 class="section-title">請選擇組別 (IT、業務分組)</h2>
+            <div class="group-cards" id="groupCards"></div>
+        </div>
+    </div>
+
+    <div id="_layout_footer"></div>
+
+    <script>
+    window._layoutConfig = {
+        root: '../',
+        navBar: {
+            title: '資料轉置/系統切轉 - 選擇組別',
+            backLinks: [{ href: '../index.html', text: '← 返回總覽' }]
+        }
+    };
+    </script>
+    <script src="../js/authToken.js"></script>
+<script>
+  (function() { if (!window.getAuthToken()) { window.location.replace('../login.html'); } })();
+</script>
+	<script src="../js/layout.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/dataLoader.js"></script>
+    <script src="../js/group.js" data-grouppage="3"></script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+/* ========== 一列一個的網格 ========== */
+.dashboard-section {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+}
+
+/* ========== 卡片重設 ========== */
+.dashboard-card {
+    padding: 0 !important;
+    min-height: 220px;
+    position: relative;
+    overflow: hidden;
+}
+.dashboard-card > .dashboard-card__title,
+.dashboard-card > .dashboard-card__value {
+    display: none;
+}
+.dc-card-inner {
+    height: 100%;
+    min-height: 220px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.dc-card-inner::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20px;
+    bottom: 20px;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+    opacity: 0.7;
+}
+
+/* ========== 頂部 ========== */
+.dc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+.dc-top-left { display: flex; flex-direction: column; }
+.dc-sub {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.45;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+.dc-label {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.dc-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    color: var(--accent);
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.dc-tag-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent);
+    animation: dcPulse 2.4s ease-in-out infinite;
+}
+@keyframes dcPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ========== 主內容區 ========== */
+.dc-main { flex: 1; display: flex; align-items: center; }
+
+/* ========== 卡片1：區域完成進度（五個圓餅，各自下方完成數） ========== */
+.dc-region-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: start;
+    gap: 12px;
+    width: 100%;
+}
+.dc-region-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+.dc-region-ring {
+    width: 100%;
+    max-width: 100px;
+    aspect-ratio: 1 / 1;
+}
+.dc-region-ring svg {
+    width: 100%;
+    height: 100%;
+}
+.dc-region-name {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0.9;
+    text-align: center;
+    white-space: nowrap;
+    margin-top: 2px;
+}
+.dc-region-count {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+}
+.dc-region-total {
+    font-size: 0.6em;
+    font-weight: 500;
+    opacity: 0.5;
+}
+.dc-region-label {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    opacity: 0.5;
+    text-align: center;
+}
+
+/* ========== 卡片2：排行 ========== */
+.dc-rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    width: 100%;
+}
+.dc-rank-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 2fr 40px;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+.dc-rank-medal {
+    font-size: 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    opacity: 0.85;
+}
+.dc-rank-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.dc-rank-name {
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.9;
+}
+.dc-rank-count {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    opacity: 0.45;
+    line-height: 1.4;
+}
+.dc-rank-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.dc-rank-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+.dc-rank-pct {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+    opacity: 0.9;
+}
+
+/* ========== 卡片3：公司分佈 ========== */
+.dc-co-wide {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+}
+.dc-co-stack-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.dc-co-stack-title {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px;
+    opacity: 0.55;
+    margin-bottom: 4px;
+}
+.dc-co-stack {
+    display: flex;
+    height: 18px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+}
+.dc-co-seg {
+    height: 100%;
+}
+.dc-co-stack-labels {
+    display: flex;
+    gap: 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+}
+.dc-co-rings {
+    display: flex;
+    gap: 12px;
+}
+.dc-co-ring-box {
+    width: 90px;
+    height: 110px;
+}
+.dc-co-ring-box svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* ========== 卡片4：時程風險警示（半圓儀表版） ========== */
+.dc-risk-wide {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    width: 100%;
+    align-items: center;
+}
+/* 左側：儀表 + 三段小標籤 */
+.dc-risk-gauge-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.dc-risk-gauge {
+    width: 100%;
+    max-width: 220px;
+}
+.dc-risk-gauge svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.dc-risk-mini-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    width: 100%;
+}
+.dc-risk-mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.dc-risk-mini-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+}
+.dc-risk-mini-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1;
+}
+.dc-risk-mini-label {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    opacity: 0.55;
+}
+/* 右側：逾期任務列表 */
+.dc-risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+}
+.dc-risk-list-title {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.7;
+    margin-bottom: 2px;
+}
+.dc-od-item {
+    display: flex;
+    flex-direction: column;
+}
+.dc-od-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px;
+}
+.dc-od-name {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dc-od-no {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 6px;
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+.dc-od-days {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: #c75d57;
+    flex-shrink: 0;
+}
+.dc-od-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px;
+    opacity: 0.55;
+    text-align: center;
+    padding: 12px 0;
+}
+.dc-od-empty-icon {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #7fae84;
+    opacity: 0.9;
+}
+
+/* ========== 底部 ========== */
+.dc-bottom {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.dc-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+.dc-stat-label {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px;
+    opacity: 0.5;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dc-stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0.9;
+    line-height: 1;
+}
+.dc-stat-sep {
+    width: 1px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+}
+
+/* ========== RWD ========== */
+@media (max-width: 640px) {
+    .dc-region-row {
+        grid-template-columns: repeat(3, 1fr);
+        row-gap: 18px;
+    }
+    .dc-co-wide,
+    .dc-risk-wide {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .dc-co-rings { justify-content: center; }
+}

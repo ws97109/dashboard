@@ -1,0 +1,80 @@
+﻿<!-- group/group1.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>對外營運 - 選擇組別</title>
+    
+    <link rel="stylesheet" href="../fonts/fonts.css">
+    
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/card.css">
+    <link rel="stylesheet" href="../css/group.css">
+    <link rel="stylesheet" href="../css/page.css">
+</head>
+<body>
+    <div id="_layout_header"></div>
+    <div id="_page_navBar"></div>
+
+    <div class="container">
+        <div class="progress-summary">
+            <div class="progress-summary__header">
+                <h2 class="progress-summary__title">
+                    進度總覽
+                    <span class="progress-summary__badge">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                        對外營運
+                    </span>
+                    
+                </h2>
+                <h2 class="progress-summary__title">
+                    <a href="../page/dashboard_out.html" class="progress-summary__badge">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                </h2>
+            </div>
+            <div class="progress-summary__stats" id="progressSummaryStats"></div>
+        </div>
+
+        <div class="selection-section">
+            <h2 class="section-title">請選擇公司</h2>
+            <div class="company-cards" id="companyCards"></div>
+        </div>
+
+        <div class="selection-section" id="groupSection" style="display: none;">
+            <h2 class="section-title">請選擇組別 (IT、業務分組)</h2>
+            <div class="group-cards" id="groupCards"></div>
+        </div>
+    </div>
+
+    <div id="_layout_footer"></div>
+
+    <script>
+    window._layoutConfig = {
+        root: '../',
+        navBar: {
+            title: '對外營運 - 選擇組別',
+            backLinks: [{ href: '../index.html', text: '← 返回總覽' }]
+        }
+    };
+    </script>
+    <script src="../js/authToken.js"></script>
+<script>
+  (function() { if (!window.getAuthToken()) { window.location.replace('../login.html'); } })();
+</script>
+	<script src="../js/layout.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/dataLoader.js"></script>
+    <script src="../js/group.js" data-grouppage="5"></script>
+</body>
+</html>

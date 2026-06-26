@@ -1,0 +1,1417 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料匯入管理 - 台新國際商業銀行</title>
+
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <!-- SheetJS：用於前端讀取 XLSX Sheet 名稱 -->
+    <script src="js/xlsx.full.min.js"></script>
+
+    <style>
+        .import-container {
+            max-width: 960px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem 3rem;
+        }
+
+        .import-page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        .import-page-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        /* ── 卡片列表 ── */
+        .import-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .import-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            border: 1px solid #f0f0f0;
+            padding: 1.8rem 2rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .import-card:hover {
+            box-shadow: 0 6px 24px rgba(220,38,38,0.1);
+        }
+
+        .import-card__header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .import-card__icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .import-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .import-card__desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+
+        /* ── CSV 格式說明 ── */
+        .import-card__format {
+            background: #f9fafb;
+            border: 1px dashed #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 1.2rem;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .import-card__format strong {
+            color: var(--primary-red);
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        /* ── 上傳區域 ── */
+        .upload-area {
+            border: 2px dashed #e5e7eb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--primary-red);
+            background: #fff5f5;
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-area__icon {
+            font-size: 2rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .upload-area__text {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .upload-area__text span {
+            color: var(--primary-red);
+            font-weight: 600;
+        }
+
+        .upload-area__filename {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: none;
+        }
+
+        /* ── 操作按鈕 ── */
+        .import-card__actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+
+        /* ── Sheet 選擇區塊 ── */
+        .import-card__sheet-select {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+        .sheet-select__label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+        .sheet-select-all {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            color: #64748b;
+            cursor: pointer;
+        }
+        .sheet-select__options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .sheet-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.85rem 0.35rem 0.5rem;
+            background: #fff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #334155;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            user-select: none;
+        }
+        .sheet-checkbox:has(input:checked) {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        .sheet-checkbox input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #3b82f6;
+            cursor: pointer;
+        }
+        .sheet-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .sheet-select__warning {
+            margin-top: 0.6rem;
+            font-size: 0.82rem;
+            color: #dc2626;
+        }
+
+        .btn-import {
+            padding: 0.6rem 1.6rem;
+            background: var(--primary-red);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Noto Sans TC', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-import:hover:not(:disabled) {
+            background: var(--dark-red);
+        }
+
+        .btn-import:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-import .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn-import.loading .spinner { display: inline-block; }
+        .btn-import.loading .btn-text { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── 結果區塊 ── */
+        .import-result {
+            display: none;
+            margin-top: 1.2rem;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            font-size: 0.875rem;
+        }
+
+        .import-result.success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .import-result.error {
+            background: #fff5f5;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .result-stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 0.5rem 0 0;
+        }
+
+        .result-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+
+        .result-stat__value {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .result-stat__label {
+            font-size: 0.75rem;
+            opacity: 0.75;
+        }
+
+        .result-errors {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.8rem;
+            background: rgba(0,0,0,0.04);
+            border-radius: 6px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            line-height: 1.8;
+        }
+
+        .result-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── 分隔線 ── */
+        .section-divider {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 2.5rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="_layout_header"></div>
+<div id="_page_navBar"></div>
+
+<div class="import-container">
+    <p class="import-page-title">CSV 批次匯入</p>
+    <p class="import-page-subtitle">請選擇對應的功能上傳 CSV 檔案，系統將自動解析並寫入資料庫。員工編號重複的資料將自動略過。</p>
+
+    <div class="import-list">
+        <div class="section-divider">主題任務匯入</div>
+
+        <!-- ════════════════════════════════════════
+             第三個：任務總表（XLSX）
+             ════════════════════════════════════════ -->
+        <div class="import-card" id="card-tasks">
+            <div class="import-card__header">
+                <div class="import-card__icon">📋</div>
+                <div>
+                    <div class="import-card__title">任務總表匯入（主題 1~5）</div>
+                </div>
+            </div>
+
+            <p class="import-card__desc">
+                上傳 XLSX 總表，系統將依「工作類別(D欄)」自動分派至對應的主題 Table：<br>
+                <code>1.前置作業</code>、<code>2.新光資料轉出</code>、<code>3.資料轉置/系統切轉</code>、<code>4.系統驗證/業務補登</code>、<code>5.對外營運</code><br>
+                J欄位請直接填入負責人員編，負責單位(I欄)將自動 LIKE 比對完整名稱。
+            </p>
+
+            <div class="import-card__format">
+                <strong>XLSX 欄位格式（資料從第 3 列開始）：</strong><br>
+                A: 任務序號 &nbsp;|&nbsp; B: 系統代號 &nbsp;|&nbsp; C: 系統名稱 &nbsp;|&nbsp; D: 工作類別 &nbsp;|&nbsp; E: 工作<br>
+                F: 預計開始日期(yyyy/MM/dd HH:mm) &nbsp;|&nbsp; G: 預計結束日期<br>
+                H: 銀行別(台新/新光) &nbsp;|&nbsp; I: 負責單位 &nbsp;|&nbsp; J: 負責人員編(owner_id)<br>
+                M: 備註(MEMO) &nbsp;|&nbsp; N: 前置任務序號(PREREQUISITE)
+            </div>
+
+            <!-- ── 選擇要匯入的主題 Sheet ── -->
+            <div class="import-card__sheet-select" id="sheet-select-block" style="display:none;">
+                <div class="sheet-select__label">
+                    <strong>📑 選擇要匯入的 Sheet：</strong>
+                    <label class="sheet-select-all">
+                        <input type="checkbox" id="chk-sheet-all" onchange="toggleAllSheets(this)">
+                        全選 / 全不選
+                    </label>
+                </div>
+                <div class="sheet-select__options" id="sheet-checkboxes">
+                    <!-- 由 JS 動態產生 -->
+                </div>
+                <div id="sheet-select-warning" class="sheet-select__warning" style="display:none;">
+                    ⚠️ 請至少選擇一個 Sheet 再進行匯入。
+                </div>
+            </div>
+
+            <div class="upload-area" id="dropzone-tasks">
+                <input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                       id="file-tasks"
+                       onchange="handleFileSelect('tasks', this)">
+                <div class="upload-area__icon">📂</div>
+                <div class="upload-area__text">
+                    拖曳 XLSX 至此，或 <span>點擊選擇檔案</span>
+                </div>
+                <div class="upload-area__filename" id="filename-tasks"></div>
+            </div>
+
+            <!-- ── 密碼輸入（選填） ── -->
+            <div style="margin-top:0.85rem; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                <label style="font-size:0.85rem; font-weight:600; color:#475569; white-space:nowrap;">
+                    🔒 Excel 密碼（選填）
+                </label>
+                <input type="password" id="xlsx-password-tasks" placeholder="若檔案有設定密碼請輸入"
+                    style="flex:1; min-width:200px; padding:0.45rem 0.75rem; border:1.5px solid #cbd5e1;
+                           border-radius:8px; font-size:0.875rem; font-family:'Noto Sans TC',sans-serif;
+                           color:#1e293b; outline:none; transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor='#ef4444'"
+                    onblur="this.style.borderColor='#cbd5e1'"
+                    onkeydown="if(event.key==='Enter') onPasswordChange('tasks')">
+                <button type="button" onclick="onPasswordChange('tasks')"
+                    style="padding:0.45rem 1rem; background:#3b82f6; color:#fff; border:none;
+                           border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer;
+                           font-family:'Noto Sans TC',sans-serif; white-space:nowrap;">
+                    🔍 讀取 Sheet
+                </button>
+                <span style="font-size:0.78rem; color:#94a3b8;">無密碼則留空</span>
+            </div>
+            <div id="pwd-status-tasks" style="display:none; margin-top:0.5rem; font-size:0.82rem; padding:0.4rem 0.8rem; background:#eff6ff; border-radius:6px;"></div>
+
+            <div class="import-card__actions">
+                <button class="btn-import" id="btn-tasks"
+                        onclick="submitTasksImport()"
+                        disabled>
+                    <div class="spinner"></div>
+                    <span class="btn-text">🚀 開始匯入</span>
+                </button>
+                <span style="font-size:0.8rem; color:var(--text-light);">僅支援 .xlsx 格式</span>
+            </div>
+
+            <div class="import-result" id="result-tasks"></div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+             第四個：資料夾批次匯入（XLSX，取第一頁籤）
+             ════════════════════════════════════════ -->
+        <div class="import-card" id="card-tasks-batch">
+            <div class="import-card__header">
+                <div class="import-card__icon">📁</div>
+                <div>
+                    <div class="import-card__title">資料夾批次任務匯入（主題 1~5）</div>
+                </div>
+            </div>
+
+            <p class="import-card__desc">
+                選擇一個資料夾，系統將掃描其中所有 <code>.xlsx</code> 檔案（含子目錄），並依序匯入每個檔案的<strong>第一個頁籤</strong>。<br>
+                請手動輸入此批次要對應的<strong>組別名稱</strong>，所有檔案將歸入同一組別。
+            </p>
+
+            <div class="import-card__format">
+                <strong>XLSX 欄位格式（資料從第 3 列開始）：</strong><br>
+                A: 任務序號 &nbsp;|&nbsp; B: 系統代號 &nbsp;|&nbsp; C: 系統名稱 &nbsp;|&nbsp; D: 工作類別 &nbsp;|&nbsp; E: 工作<br>
+                F: 預計開始日期(yyyy/MM/dd HH:mm) &nbsp;|&nbsp; G: 預計結束日期<br>
+                H: 銀行別 &nbsp;|&nbsp; I: 負責單位 &nbsp;|&nbsp; J: 負責人員編(owner_id)<br>
+                M: 備註(MEMO) &nbsp;|&nbsp; N: 前置任務序號(PREREQUISITE)
+            </div>
+
+            <!-- 組別名稱輸入 -->
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:0.875rem; font-weight:600; color:#334155; display:block; margin-bottom:0.4rem;">
+                    📌 組別名稱（必填）
+                </label>
+                <input type="text" id="batch-group-name" placeholder="請輸入中文組別名稱，例如：系統切換組"
+                    style="width:100%; padding:0.55rem 0.85rem; border:1.5px solid #cbd5e1; border-radius:8px;
+                           font-size:0.9rem; font-family:'Noto Sans TC',sans-serif; color:#1e293b;
+                           outline:none; box-sizing:border-box; transition:border-color 0.2s;"
+                    oninput="validateBatchForm()"
+                    onfocus="this.style.borderColor='#ef4444'"
+                    onblur="this.style.borderColor='#cbd5e1'">
+                <div id="batch-group-warning" style="display:none; font-size:0.8rem; color:#dc2626; margin-top:0.3rem;">
+                    ⚠️ 請填寫組別名稱。
+                </div>
+            </div>
+
+            <!-- 資料夾選擇 -->
+            <div class="upload-area" id="dropzone-tasks-batch">
+                <input type="file" id="file-tasks-batch" webkitdirectory multiple
+                       accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                       onchange="handleFolderSelect(this)">
+                <div class="upload-area__icon">📁</div>
+                <div class="upload-area__text">
+                    點擊選擇資料夾（含子目錄的 .xlsx 將全數掃描）
+                </div>
+                <div class="upload-area__filename" id="filename-tasks-batch"></div>
+            </div>
+
+            <!-- 找到的檔案列表 -->
+            <div id="batch-file-list" style="display:none; margin-top:0.8rem;
+                 background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.75rem 1rem;">
+                <div style="font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:0.5rem;">
+                    📋 找到的 Excel 檔案：
+                </div>
+                <div id="batch-file-items" style="font-size:0.82rem; color:#334155; line-height:2;"></div>
+            </div>
+
+            <div class="import-card__actions">
+                <button class="btn-import" id="btn-tasks-batch"
+                        onclick="submitBatchImport()"
+                        disabled>
+                    <div class="spinner"></div>
+                    <span class="btn-text">🚀 開始批次匯入</span>
+                </button>
+                <span style="font-size:0.8rem; color:var(--text-light);">僅掃描 .xlsx，每個檔案取第一個頁籤</span>
+            </div>
+
+            <!-- 進度條 -->
+            <div id="batch-progress-wrap" style="display:none; margin-top:1rem;">
+                <div style="font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:0.4rem;">
+                    ⏳ 匯入進度：<span id="batch-progress-text">0 / 0</span>
+                </div>
+                <div style="background:#e2e8f0; border-radius:999px; height:8px; overflow:hidden;">
+                    <div id="batch-progress-bar"
+                         style="height:100%; background:var(--primary-red); width:0%; transition:width 0.3s;"></div>
+                </div>
+            </div>
+
+            <!-- 批次結果彙總 -->
+            <div class="import-result" id="result-tasks-batch"></div>
+
+            <!-- 每個檔案的錯誤明細 -->
+            <div id="batch-file-errors" style="display:none; margin-top:1rem;"></div>
+        </div>
+
+        <div class="section-divider">任務資料匯出</div>
+
+        <!-- ════════════════════════════════════════
+             匯出：任務總表 XLSX（主題 1~5）
+             ════════════════════════════════════════ -->
+        <div class="import-card" id="card-export-tasks">
+            <div class="import-card__header">
+                <div class="import-card__icon">📥</div>
+                <div>
+                    <div class="import-card__title">任務總表匯出（主題 1~5）</div>
+                </div>
+            </div>
+
+            <p class="import-card__desc">
+                將資料庫中所有主題（1.前置作業 ～ 5.對外營運）的任務資料，匯出為一份 <code>.xlsx</code> 格式檔案。<br>
+                每個主題以分隔列區分，欄位包含系統代號、系統名稱、工作類別、預計日期、銀行別、負責單位、負責人等完整資訊。
+            </p>
+
+            <div class="import-card__format">
+                <strong>匯出欄位說明：</strong><br>
+                A: Table ID（如 MA_TASK_PREPARATION-1）&nbsp;|&nbsp; B: 任務序號 &nbsp;|&nbsp; C: 系統代號 &nbsp;|&nbsp; D: 系統名稱<br>
+                E: 工作類別 &nbsp;|&nbsp; F: 工作 &nbsp;|&nbsp; G: 預計開始日期(yyyy/MM/dd HH:mm) &nbsp;|&nbsp; H: 預計結束日期(yyyy/MM/dd HH:mm)<br>
+                I: 銀行別 &nbsp;|&nbsp; J: 負責單位 &nbsp;|&nbsp; K: 負責人（多人以"/"分隔）
+            </div>
+
+            <div class="import-card__actions" style="margin-top:1.2rem;">
+                <button class="btn-import" id="btn-export-tasks" onclick="doExportTasks(this)">
+                    <div class="spinner"></div>
+                    <span class="btn-text">📥 匯出 Excel</span>
+                </button>
+                <span style="font-size:0.8rem; color:var(--text-light);">匯出主題 1~5 全部任務資料</span>
+            </div>
+
+            <div id="result-export-tasks" style="margin-top:0.8rem; font-size:0.85rem;"></div>
+        </div>
+
+        <div class="section-divider">檢核總表匯入</div>
+
+        <!-- ════════════════════════════════════════
+             匯入檢核總表（MA_CHECK_SUM）
+             ════════════════════════════════════════ -->
+        <div class="import-card" id="card-check-sum">
+            <div class="import-card__header">
+                <div class="import-card__icon">✅</div>
+                <div>
+                    <div class="import-card__title">匯入檢核總表</div>
+                </div>
+            </div>
+
+            <p class="import-card__desc">
+                上傳 XLSX 檢核總表，系統將逐列寫入 <code>MA_CHECK_SUM</code>。<br>
+                資料從第 <strong>2</strong> 列開始（第 1 列為標題），每次匯入皆為<strong>新增</strong>資料。
+            </p>
+
+            <div class="import-card__format">
+                <strong>XLSX 欄位格式（A~X 欄，第 1~2 列不匯入，第 3 列起為資料）：</strong><br>
+                A: Rowid（略過）&nbsp;|&nbsp; B: 已完成業務單位確認(Y/N) &nbsp;|&nbsp; C: 中介檔名 &nbsp;|&nbsp; D: 台新系統代碼<br>
+                E: 檢查類別細項說明 &nbsp;|&nbsp; F: 檢查類別細項說明補充 &nbsp;|&nbsp; G: 檢核處理程式內容說明(自填)<br>
+                H: 錯誤處理方式說明 &nbsp;|&nbsp; I: 錯誤處理方式說明(補充)<br>
+                J: 行動方式說明 &nbsp;|&nbsp; K: 行動方式說明(補充)<br>
+                L: 目前作法對整體上下游系統可能的影響及衝擊 &nbsp;|&nbsp; M: 寫入目標<br>
+                N: 是否具有自動驗證程式或檢核機制(Y/N) &nbsp;|&nbsp; O: 佐證文件補充說明<br>
+                P: 系統中文名稱 &nbsp;|&nbsp; Q: 業務主題(檔案說明) &nbsp;|&nbsp; R: 中介檔負責人員<br>
+                S: AP人員 &nbsp;|&nbsp; T: AP組別 &nbsp;|&nbsp; U: 建立者<br>
+                V: 建立時間（通用格式，例：2026/5/7 下午 04:16:19）<br>
+                W: 最後修改者 &nbsp;|&nbsp; X: 最後修改時間（通用格式，例：2026/5/7 下午 04:16:19）
+            </div>
+
+            <div class="upload-area" id="dropzone-check-sum">
+                <input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                       id="file-check-sum"
+                       onchange="handleFileSelect('check-sum', this)">
+                <div class="upload-area__icon">📂</div>
+                <div class="upload-area__text">
+                    拖曳 XLSX 至此，或 <span>點擊選擇檔案</span>
+                </div>
+                <div class="upload-area__filename" id="filename-check-sum"></div>
+            </div>
+
+            <!-- 密碼輸入（選填） -->
+            <div style="margin-top:0.85rem; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                <label style="font-size:0.85rem; font-weight:600; color:#475569; white-space:nowrap;">
+                    🔒 Excel 密碼（選填）
+                </label>
+                <input type="password" id="xlsx-password-check-sum" placeholder="若檔案有設定密碼請輸入"
+                    style="flex:1; min-width:200px; padding:0.45rem 0.75rem; border:1.5px solid #cbd5e1;
+                           border-radius:8px; font-size:0.875rem; font-family:'Noto Sans TC',sans-serif;
+                           color:#1e293b; outline:none; transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor='#ef4444'"
+                    onblur="this.style.borderColor='#cbd5e1'">
+                <span style="font-size:0.78rem; color:#94a3b8;">無密碼則留空</span>
+            </div>
+
+            <div class="import-card__actions">
+                <button class="btn-import" id="btn-check-sum"
+                        onclick="submitCheckSumImport()"
+                        disabled>
+                    <div class="spinner"></div>
+                    <span class="btn-text">🚀 開始匯入</span>
+                </button>
+                <span style="font-size:0.8rem; color:var(--text-light);">僅支援 .xlsx 格式</span>
+            </div>
+
+            <div class="import-result" id="result-check-sum"></div>
+        </div>
+
+    </div>
+</div>
+
+<div id="_layout_footer"></div>
+
+<script>
+    window._layoutConfig = {
+        root: '',
+        navBar: {
+            title: '資料匯入管理',
+            backLinks: [{ href: 'index.html', text: '← 返回總覽' }]
+        }
+    };
+</script>
+<script src="js/authToken.js"></script>
+<script>
+  (function() { if (!window.getAuthToken()) { window.location.replace('login.html'); } })();
+</script>
+<script>
+    // ── ADMIN 權限驗證：非 ADMIN 一律導回首頁 ──
+    (function () {
+        var role = localStorage.getItem('role') || sessionStorage.getItem('role');
+        if (role !== 'ADMIN') {
+            window.location.replace('index.html');
+        }
+    })();
+</script>
+<script src="js/layout.js"></script>
+
+<script>
+    'use strict';
+
+    // ── 拖曳支援 ──────────────────────────────────────────
+    document.querySelectorAll('.upload-area').forEach(function(zone) {
+        zone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            zone.classList.add('dragover');
+        });
+        zone.addEventListener('dragleave', function() {
+            zone.classList.remove('dragover');
+        });
+        zone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            var id = zone.id.replace('dropzone-', '');
+            var input = document.getElementById('file-' + id);
+            if (e.dataTransfer.files.length > 0) {
+                // 將拖曳的檔案塞回 input（無法直接賦值，改用 DataTransfer）
+                var dt = new DataTransfer();
+                dt.items.add(e.dataTransfer.files[0]);
+                input.files = dt.files;
+                if (id === 'tasks-split') {
+                    handleFileSelectSplit(input);
+                } else {
+                    handleFileSelect(id, input);
+                }
+            }
+        });
+    });
+
+    // ── 選擇檔案後更新 UI ──────────────────────────────────
+    function handleFileSelect(id, input) {
+        var filenameEl = document.getElementById('filename-' + id);
+        var btn        = document.getElementById('btn-' + id);
+        var resultEl   = document.getElementById('result-' + id);
+
+        if (input.files && input.files.length > 0) {
+            var file = input.files[0];
+
+            // ── 檔案類型白名單驗證（Often Misused: File Upload 防護）──
+            var allowedExts  = id === 'comparison-user' ? ['.csv'] : ['.xlsx'];
+            var allowedMimes = id === 'comparison-user'
+                ? ['text/csv', 'application/csv', 'text/plain', 'application/vnd.ms-excel']
+                : ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            var ext  = file.name.toLowerCase().lastIndexOf('.') >= 0
+                ? file.name.toLowerCase().slice(file.name.toLowerCase().lastIndexOf('.'))
+                : '';
+            // 嚴格 MIME 類型完整比對（非僅前綴）
+            if (!allowedExts.includes(ext) ||
+                (file.type && !allowedMimes.includes(file.type))) {
+                filenameEl.textContent = '⚠️ 不支援的檔案格式，請上傳 ' + allowedExts.join('/') + ' 檔案';
+                filenameEl.style.display = 'block';
+                btn.disabled = true;
+                input.value = '';
+                return;
+            }
+
+            // ── 檔案大小限制（最大 50MB）──
+            if (file.size > 50 * 1024 * 1024) {
+                filenameEl.textContent = '⚠️ 檔案大小超過限制（最大 50MB），請重新選擇';
+                filenameEl.style.display = 'block';
+                btn.disabled = true;
+                input.value = '';
+                return;
+            }
+
+            filenameEl.textContent = '📄 ' + file.name + ' (' + formatBytes(file.size) + ')';
+            filenameEl.style.display = 'block';
+            btn.disabled = false;
+
+            // tasks 專用：讀取 Sheet 名稱並動態產生勾選列表
+            if (id === 'tasks') {
+                readXlsxSheets(file);
+            }
+        } else {
+            filenameEl.style.display = 'none';
+            btn.disabled = true;
+
+            if (id === 'tasks') {
+                document.getElementById('sheet-select-block').style.display = 'none';
+            }
+        }
+
+        // 清除上次結果
+        resultEl.style.display = 'none';
+        resultEl.innerHTML = '';
+    }
+
+    // ── 讀取 XLSX Sheet 名稱（SheetJS / 後端解密） ──────────────────
+    function readXlsxSheets(file) {
+        var filePasscode = document.getElementById('xlsx-password-tasks').value;
+        if (filePasscode) {
+            // 有保護碼 → 由後端 POI 解密後回傳 Sheet 名稱
+            _fetchSheetNamesFromServer(file, filePasscode, 'pwd-status-tasks', function(names, errMsg) {
+                if (errMsg) {
+                    var pwdInput = document.getElementById('xlsx-password-tasks');
+                    pwdInput.style.borderColor = '#ef4444';
+                    var s = document.getElementById('pwd-status-tasks');
+                    s.style.display = 'block'; s.style.color = '#dc2626';
+                    s.textContent = '❌ ' + errMsg;
+                    document.getElementById('sheet-select-block').style.display = 'none';
+                } else {
+                    _renderSheetCheckboxes(names, 'sheet-checkboxes', 'chk-sheet',
+                        'chk-sheet-all', 'sheet-select-block', 'sheet-select-warning');
+                }
+            });
+        } else {
+            // 無保護碼 → SheetJS 本地讀取
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = new Uint8Array(e.target.result);
+                    var workbook = XLSX.read(data, { type: 'array', bookSheets: true });
+                    _renderSheetCheckboxes(workbook.SheetNames, 'sheet-checkboxes', 'chk-sheet',
+                        'chk-sheet-all', 'sheet-select-block', 'sheet-select-warning');
+                } catch(err) {
+                    document.getElementById('sheet-select-block').style.display = 'none';
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    }
+
+    // ── 密碼改變後重新讀取 Sheet（tasks 卡）──────────────
+    function onPasswordChange(id) {
+        var pwdInput = document.getElementById('xlsx-password-' + id);
+        var filePasscode = pwdInput ? pwdInput.value.trim() : '';
+        var input = document.getElementById('file-' + id);
+        if (!input || !input.files || input.files.length === 0) {
+            alert('請先選擇 XLSX 檔案，再輸入密碼讀取 Sheet。');
+            return;
+        }
+        if (id === 'tasks') readXlsxSheets(input.files[0]);
+    }
+
+    // ── 送出匯入 ──────────────────────────────────────────
+    function submitImport(id, apiUrl) {
+        var input    = document.getElementById('file-' + id);
+        var btn      = document.getElementById('btn-' + id);
+        var resultEl = document.getElementById('result-' + id);
+
+        if (!input.files || input.files.length === 0) {
+            showResult(resultEl, false, '請先選擇 CSV 檔案', null);
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('file', input.files[0]);
+
+        // Loading 狀態
+        btn.disabled = true;
+        btn.classList.add('loading');
+        resultEl.style.display = 'none';
+
+        window.authFetch(apiUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() },
+            body: formData
+        })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, data.success, data.message, data);
+            })
+            .catch(function(err) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, false, '連線失敗，請稍後再試', null);
+            });
+    }
+
+    // ── 全選 / 全不選 ──────────────────────────────────────
+    function toggleAllSheets(masterChk) {
+        document.querySelectorAll('.chk-sheet').forEach(function(chk) {
+            chk.checked = masterChk.checked;
+        });
+        document.getElementById('sheet-select-warning').style.display = 'none';
+    }
+
+    // ── 任務總表專用匯入（帶入選擇的主題） ──────────────────
+    function submitTasksImport() {
+        var input    = document.getElementById('file-tasks');
+        var btn      = document.getElementById('btn-tasks');
+        var resultEl = document.getElementById('result-tasks');
+        var warning  = document.getElementById('sheet-select-warning');
+
+        if (!input.files || input.files.length === 0) {
+            showResult(resultEl, false, '請先選擇 XLSX 檔案', null);
+            return;
+        }
+
+        // 收集被勾選的 Sheet 索引（0-based）
+        var selectedSheets = [];
+        document.querySelectorAll('.chk-sheet:checked').forEach(function(chk) {
+            selectedSheets.push(chk.value); // value 為 0-based index
+        });
+
+        if (selectedSheets.length === 0) {
+            warning.style.display = 'block';
+            return;
+        }
+        warning.style.display = 'none';
+
+        var formData = new FormData();
+        formData.append('file', input.files[0]);
+        formData.append('sheets', selectedSheets.join(','));
+        var pwd = document.getElementById('xlsx-password-tasks').value;
+        if (pwd) formData.append('password', pwd);
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+        resultEl.style.display = 'none';
+
+        window.authFetch('/eServiceA/dashboard/import/tasks', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() },
+            body: formData
+        })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, data.success, data.message, data);
+            })
+            .catch(function(err) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, false, '連線失敗，請稍後再試', null);
+            });
+    }
+
+    // ── 顯示結果 ──────────────────────────────────────────
+    function showResult(el, success, message, data) {
+        el.className = 'import-result ' + (success ? 'success' : 'error');
+
+        var html = '<div class="result-title">' + (success ? '✅ ' : '❌ ') + escapeHtml(String(message)) + '</div>';
+
+        if (data && success) {
+            html += '<div class="result-stats">' +
+                '<div class="result-stat"><span class="result-stat__value">' + (data.totalCount   || 0) + '</span><span class="result-stat__label">總筆數</span></div>' +
+                '<div class="result-stat"><span class="result-stat__value" style="color:#16a34a">' + (data.successCount || 0) + '</span><span class="result-stat__label">新增成功</span></div>' +
+                '<div class="result-stat"><span class="result-stat__value" style="color:#d97706">' + (data.skipCount    || 0) + '</span><span class="result-stat__label">略過/更新</span></div>' +
+                '<div class="result-stat"><span class="result-stat__value" style="color:#dc2626">' + (data.errorCount   || 0) + '</span><span class="result-stat__label">錯誤筆數</span></div>' +
+                '</div>';
+        }
+
+        if (data && data.errorRows && data.errorRows.length > 0) {
+            html += '<div class="result-errors">' + data.errorRows.map(function(r) {
+                return '⚠ ' + escapeHtml(r);
+            }).join('<br>') + '</div>';
+        }
+
+        el.innerHTML = html;
+        el.style.display = 'block';
+    }
+
+    // ── 任務總表（日期時間分欄）──────────────────────────────────────────
+
+    function handleFileSelectSplit(input) {
+        var filenameEl = document.getElementById('filename-tasks-split');
+        var btn        = document.getElementById('btn-tasks-split');
+        var resultEl   = document.getElementById('result-tasks-split');
+
+        if (input.files && input.files.length > 0) {
+            var file = input.files[0];
+
+            // ── 檔案類型白名單驗證（Often Misused: File Upload 防護）──
+            var ext = file.name.toLowerCase().lastIndexOf('.') >= 0
+                ? file.name.toLowerCase().slice(file.name.toLowerCase().lastIndexOf('.'))
+                : '';
+            if (ext !== '.xlsx') {
+                filenameEl.textContent = '⚠️ 不支援的檔案格式，請上傳 .xlsx 檔案';
+                filenameEl.style.display = 'block';
+                btn.disabled = true;
+                input.value = '';
+                resultEl.style.display = 'none';
+                resultEl.innerHTML = '';
+                return;
+            }
+
+            // ── 檔案大小限制（最大 50MB）──
+            if (file.size > 50 * 1024 * 1024) {
+                filenameEl.textContent = '⚠️ 檔案大小超過限制（最大 50MB），請重新選擇';
+                filenameEl.style.display = 'block';
+                btn.disabled = true;
+                input.value = '';
+                resultEl.style.display = 'none';
+                resultEl.innerHTML = '';
+                return;
+            }
+
+            filenameEl.textContent = '📄 ' + file.name + ' (' + formatBytes(file.size) + ')';
+            filenameEl.style.display = 'block';
+            btn.disabled = false;
+            readXlsxSheetsSplit(file);
+        } else {
+            filenameEl.style.display = 'none';
+            btn.disabled = true;
+            document.getElementById('sheet-select-block-split').style.display = 'none';
+        }
+
+        resultEl.style.display = 'none';
+        resultEl.innerHTML = '';
+    }
+
+    function readXlsxSheetsSplit(file) {
+        var filePasscode = document.getElementById('xlsx-password-tasks-split').value;
+        if (filePasscode) {
+            _fetchSheetNamesFromServer(file, filePasscode, 'pwd-status-tasks-split', function(names, errMsg) {
+                if (errMsg) {
+                    var pwdInput = document.getElementById('xlsx-password-tasks-split');
+                    pwdInput.style.borderColor = '#ef4444';
+                    var s = document.getElementById('pwd-status-tasks-split');
+                    s.style.display = 'block'; s.style.color = '#dc2626';
+                    s.textContent = '❌ ' + errMsg;
+                    document.getElementById('sheet-select-block-split').style.display = 'none';
+                } else {
+                    _renderSheetCheckboxes(names, 'sheet-checkboxes-split', 'chk-sheet-split',
+                        'chk-sheet-all-split', 'sheet-select-block-split', 'sheet-select-warning-split');
+                }
+            });
+        } else {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = new Uint8Array(e.target.result);
+                    var workbook = XLSX.read(data, { type: 'array', bookSheets: true });
+                    _renderSheetCheckboxes(workbook.SheetNames, 'sheet-checkboxes-split', 'chk-sheet-split',
+                        'chk-sheet-all-split', 'sheet-select-block-split', 'sheet-select-warning-split');
+                } catch(err) {
+                    document.getElementById('sheet-select-block-split').style.display = 'none';
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    }
+
+    function onPasswordChangeSplit() {
+        var pwdInput = document.getElementById('xlsx-password-tasks-split');
+        var input = document.getElementById('file-tasks-split');
+        if (!input || !input.files || input.files.length === 0) {
+            alert('請先選擇 XLSX 檔案，再輸入密碼讀取 Sheet。');
+            return;
+        }
+        readXlsxSheetsSplit(input.files[0]);
+    }
+
+    function toggleAllSheetsSplit(masterChk) {
+        document.querySelectorAll('.chk-sheet-split').forEach(function(chk) {
+            chk.checked = masterChk.checked;
+        });
+        document.getElementById('sheet-select-warning-split').style.display = 'none';
+    }
+
+    function submitTasksSplitImport() {
+        var input    = document.getElementById('file-tasks-split');
+        var btn      = document.getElementById('btn-tasks-split');
+        var resultEl = document.getElementById('result-tasks-split');
+        var warning  = document.getElementById('sheet-select-warning-split');
+
+        if (!input.files || input.files.length === 0) {
+            showResult(resultEl, false, '請先選擇 XLSX 檔案', null);
+            return;
+        }
+
+        var selectedSheets = [];
+        document.querySelectorAll('.chk-sheet-split:checked').forEach(function(chk) {
+            selectedSheets.push(chk.value);
+        });
+
+        if (selectedSheets.length === 0) {
+            warning.style.display = 'block';
+            return;
+        }
+        warning.style.display = 'none';
+
+        var formData = new FormData();
+        formData.append('file', input.files[0]);
+        formData.append('sheets', selectedSheets.join(','));
+        var pwd = document.getElementById('xlsx-password-tasks-split').value;
+        if (pwd) formData.append('password', pwd);
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+        resultEl.style.display = 'none';
+
+        window.authFetch('/eServiceA/dashboard/import/tasks-split', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() },
+            body: formData
+        })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, data.success, data.message, data);
+            })
+            .catch(function(err) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, false, '連線失敗，請稍後再試', null);
+            });
+    }
+
+    // ── 批次資料夾匯入 ───────────────────────────────────────────────────
+
+    var _batchXlsxFiles = [];  // 過濾後的 .xlsx 檔案陣列
+
+    function handleFolderSelect(input) {
+        var filenameEl = document.getElementById('filename-tasks-batch');
+        var fileListEl = document.getElementById('batch-file-list');
+        var fileItems  = document.getElementById('batch-file-items');
+
+        // 清空結果
+        document.getElementById('result-tasks-batch').style.display = 'none';
+        document.getElementById('batch-file-errors').style.display = 'none';
+        document.getElementById('batch-progress-wrap').style.display = 'none';
+
+        if (!input.files || input.files.length === 0) {
+            _batchXlsxFiles = [];
+            filenameEl.style.display = 'none';
+            fileListEl.style.display = 'none';
+            validateBatchForm();
+            return;
+        }
+
+        // 過濾出 .xlsx（並排除超過 50MB 的檔案）
+        var MAX_BATCH_FILE_SIZE = 50 * 1024 * 1024;
+        _batchXlsxFiles = Array.from(input.files).filter(function(f) {
+            var fExt = f.name.toLowerCase().lastIndexOf('.') >= 0
+                ? f.name.toLowerCase().slice(f.name.toLowerCase().lastIndexOf('.'))
+                : '';
+            return fExt === '.xlsx' && f.size <= MAX_BATCH_FILE_SIZE;
+        });
+
+        if (_batchXlsxFiles.length === 0) {
+            filenameEl.textContent = '⚠️ 所選資料夾內未找到任何 .xlsx 檔案';
+            filenameEl.style.display = 'block';
+            fileListEl.style.display = 'none';
+        } else {
+            filenameEl.textContent = '📁 已掃描到 ' + _batchXlsxFiles.length + ' 個 .xlsx 檔案';
+            filenameEl.style.display = 'block';
+
+            fileItems.innerHTML = _batchXlsxFiles.map(function(f, i) {
+                return '<span style="display:inline-block; background:#fff; border:1px solid #e2e8f0;' +
+                    'border-radius:6px; padding:0.1rem 0.6rem; margin:0.15rem 0.3rem 0.15rem 0;">' +
+                    (i + 1) + '. ' + escapeHtml(f.webkitRelativePath || f.name) + '</span>';
+            }).join('');
+            fileListEl.style.display = 'block';
+        }
+
+        validateBatchForm();
+    }
+
+    function validateBatchForm() {
+        var groupName = document.getElementById('batch-group-name').value.trim();
+        var btn = document.getElementById('btn-tasks-batch');
+        btn.disabled = !(groupName.length > 0 && _batchXlsxFiles.length > 0);
+    }
+
+    async function submitBatchImport() {
+        var groupName = document.getElementById('batch-group-name').value.trim();
+        var btn       = document.getElementById('btn-tasks-batch');
+        var resultEl  = document.getElementById('result-tasks-batch');
+        var errorsEl  = document.getElementById('batch-file-errors');
+        var groupWarn = document.getElementById('batch-group-warning');
+
+        // 驗證
+        if (!groupName) {
+            groupWarn.style.display = 'block';
+            return;
+        }
+        groupWarn.style.display = 'none';
+
+        if (_batchXlsxFiles.length === 0) {
+            showResult(resultEl, false, '請先選擇含 .xlsx 的資料夾', null);
+            return;
+        }
+
+        // 初始化進度
+        btn.disabled = true;
+        btn.classList.add('loading');
+        resultEl.style.display = 'none';
+        errorsEl.style.display = 'none';
+        errorsEl.innerHTML = '';
+
+        var progressWrap = document.getElementById('batch-progress-wrap');
+        var progressBar  = document.getElementById('batch-progress-bar');
+        var progressText = document.getElementById('batch-progress-text');
+        progressWrap.style.display = 'block';
+        progressBar.style.width = '0%';
+
+        var total        = _batchXlsxFiles.length;
+        var totalRows    = 0;
+        var totalSuccess = 0;
+        var totalError   = 0;
+        var fileErrors   = [];  // [{fileName, errorRows:[]}]
+
+        for (var i = 0; i < total; i++) {
+            var file = _batchXlsxFiles[i];
+            var filePath = file.webkitRelativePath || file.name;
+            progressText.textContent = (i + 1) + ' / ' + total + '  (' + escapeHtml(file.name) + ')';
+            progressBar.style.width = Math.round(((i) / total) * 100) + '%';
+
+            var formData = new FormData();
+            formData.append('file', file);
+            formData.append('groupName', groupName);
+
+            try {
+                var res  = await window.authFetch('/eServiceA/dashboard/import/tasks-batch', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() },
+                    body: formData
+                });
+                var data = await res.json();
+
+                totalRows    += (data.totalCount   || 0);
+                totalSuccess += (data.successCount || 0);
+                totalError   += (data.errorCount   || 0);
+
+                if (data.errorRows && data.errorRows.length > 0) {
+                    fileErrors.push({ fileName: filePath, errorRows: data.errorRows });
+                }
+            } catch (err) {
+                totalError++;
+                fileErrors.push({ fileName: filePath, errorRows: ['連線失敗，請稍後再試'] });
+            }
+        }
+
+        progressBar.style.width = '100%';
+        progressText.textContent = '完成！共 ' + total + ' 個檔案';
+
+        // 彙總結果
+        btn.classList.remove('loading');
+        btn.disabled = false;
+
+        var summaryData = {
+            totalCount:   totalRows,
+            successCount: totalSuccess,
+            errorCount:   totalError
+        };
+        showResult(resultEl, totalError === 0, '批次匯入完成（共 ' + total + ' 個檔案）', summaryData);
+
+        // 展示每個檔案的錯誤明細
+        if (fileErrors.length > 0) {
+            var html = '<div style="font-size:0.9rem; font-weight:700; color:#991b1b; margin-bottom:0.6rem;">📂 異常檔案明細</div>';
+            fileErrors.forEach(function(fe) {
+                html += '<div style="margin-bottom:0.8rem; background:#fff5f5; border:1px solid #fecaca;' +
+                    'border-radius:8px; padding:0.75rem 1rem;">' +
+                    '<div style="font-size:0.85rem; font-weight:700; color:#b91c1c; margin-bottom:0.4rem;">📄 ' +
+                    escapeHtml(fe.fileName) + '</div>' +
+                    '<div style="font-size:0.8rem; color:#7f1d1d; line-height:1.9;">' +
+                    fe.errorRows.map(function(r) { return '⚠ ' + escapeHtml(r); }).join('<br>') +
+                    '</div></div>';
+            });
+            errorsEl.innerHTML = html;
+            errorsEl.style.display = 'block';
+        }
+    }
+
+    // ── 工具函式 ──────────────────────────────────────────
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ── 呼叫後端取得 Sheet 名稱（有密碼時使用）────────────
+    function _fetchSheetNamesFromServer(file, filePasscode, statusElId, callback) {
+        var statusEl = statusElId ? document.getElementById(statusElId) : null;
+        if (statusEl) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#2563eb';
+            statusEl.textContent = '⏳ 正在連線後端讀取 Sheet 清單…';
+        }
+
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('password', filePasscode);
+
+        var url = '/eServiceA/dashboard/import/sheetnames';
+
+        window.authFetch(url, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() },
+            body: formData
+        })
+            .then(function(res) {
+                return res.json();
+            })
+            .then(function(data) {
+                if (statusEl) statusEl.style.display = 'none';
+                if (data.success) {
+                    callback(data.sheetNames, null);
+                } else {
+                    callback(null, data.message || '密碼錯誤，無法取得 Sheet 名稱');
+                }
+            })
+            .catch(function(err) {
+                if (statusEl) {
+                    statusEl.style.color = '#dc2626';
+                    statusEl.textContent = '❌ 連線失敗，請確認後端服務是否正常';
+                }
+                callback(null, '連線失敗，請稍後再試');
+            });
+    }
+
+    // ── 渲染 Sheet 勾選列表（共用）────────────────────────
+    function _renderSheetCheckboxes(sheetNames, containerId, chkClass, allChkId, blockId, warningId) {
+        var container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        var colors = ['#ef4444','#22c55e','#eab308','#84cc16','#f97316',
+            '#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f59e0b'];
+
+        sheetNames.forEach(function(name, idx) {
+            var color = colors[idx % colors.length];
+            var label = document.createElement('label');
+            label.className = 'sheet-checkbox';
+            label.innerHTML =
+                '<input type="checkbox" class="' + chkClass + '" value="' + idx + '" checked>' +
+                '<span class="sheet-badge" style="background:' + color + ';">' + (idx + 1) + '</span>' +
+                escapeHtml(name);
+            container.appendChild(label);
+        });
+
+        document.getElementById(allChkId).checked = true;
+        document.getElementById(blockId).style.display = 'block';
+        document.getElementById(warningId).style.display = 'none';
+    }
+
+    // ── 匯出任務總表 XLSX ───────────────────────────────────────────────
+    function doExportTasks(btn) {
+        var resultEl = document.getElementById('result-export-tasks');
+        btn.disabled = true;
+        btn.querySelector('.spinner').style.display = 'inline-block';
+        btn.querySelector('.btn-text').textContent   = '⏳ 匯出中…';
+        resultEl.innerHTML = '';
+
+        window.authFetch('/eServiceA/dashboard/import/export/tasks', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                // 優先取 filename*=UTF-8''... (RFC 5987)，退而取 filename="..."
+                var disposition = res.headers.get('Content-Disposition') || '';
+                var rfc5987 = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+                var rfc2231 = disposition.match(/filename="?([^";]+)"?/i);
+                var filename = rfc5987
+                    ? decodeURIComponent(rfc5987[1])
+                    : rfc2231
+                        ? rfc2231[1]
+                        : '任務總表匯出.xlsx';
+                return res.blob().then(function(blob) {
+                    return { blob: blob, filename: filename };
+                });
+            })
+            .then(function(result) {
+                var url = URL.createObjectURL(result.blob);
+                var a   = document.createElement('a');
+                a.href  = url;
+                a.download = result.filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                resultEl.innerHTML =
+                    '<span style="color:#16a34a;">✅ 匯出成功，檔案已下載：' +
+                    escapeHtml(result.filename) + '</span>';
+            })
+            .catch(function(err) {
+                resultEl.innerHTML =
+                    '<span style="color:#dc2626;">❌ 匯出失敗，請稍後再試</span>';
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.querySelector('.spinner').style.display = 'none';
+                btn.querySelector('.btn-text').textContent  = '📥 匯出 Excel';
+            });
+    }
+
+    // ── 檢核總表匯入 ──────────────────────────────────────────────────────
+    function submitCheckSumImport() {
+        var input    = document.getElementById('file-check-sum');
+        var btn      = document.getElementById('btn-check-sum');
+        var resultEl = document.getElementById('result-check-sum');
+
+        if (!input.files || input.files.length === 0) {
+            showResult(resultEl, false, '請先選擇 XLSX 檔案', null);
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('file', input.files[0]);
+        var pwd = document.getElementById('xlsx-password-check-sum').value;
+        if (pwd) formData.append('password', pwd);
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+        resultEl.style.display = 'none';
+
+        window.authFetch('/eServiceA/dashboard/import/check-sum', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() },
+            body: formData
+        })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, data.success, data.message, data);
+            })
+            .catch(function(err) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                showResult(resultEl, false, '連線失敗，請稍後再試', null);
+            });
+    }
+</script>
+</body>
+</html>

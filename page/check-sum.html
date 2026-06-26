@@ -1,0 +1,553 @@
+﻿<!-- page/check-sum.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>匯入檢核總表 - 台新國際商業銀行</title>
+
+    <link rel="stylesheet" href="../fonts/fonts.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/page.css">
+
+    <style>
+        /* ── 篩選區 ─────────────────────────────── */
+        .cs-filter-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem 2.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        .cs-filter-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .cs-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem 1.5rem;
+        }
+        .cs-filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .cs-filter-field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-medium);
+            letter-spacing: 0.05em;
+        }
+        .cs-filter-field input,
+        .cs-filter-field select {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #f8fafc;
+            color: var(--text-dark);
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+        .cs-filter-field input:focus,
+        .cs-filter-field select:focus {
+            outline: none;
+            border-color: #ef4444;
+            background: #fff;
+        }
+        .cs-filter-actions {
+            margin-top: 1.2rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .cs-btn {
+            padding: 0.55rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .cs-btn:hover  { opacity: 0.85; transform: translateY(-1px); }
+        .cs-btn:active { transform: translateY(0); }
+        .cs-btn--primary { background: #ef4444; color: #fff; }
+        .cs-btn--ghost   { background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; }
+
+        /* ── 每頁筆數選擇 ─── */
+        .cs-page-size-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-left: auto;
+        }
+        .cs-page-size-wrap select {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.85rem;
+            font-family: inherit;
+            background: #f8fafc;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        /* ── 表格區 ─────────────────────────────── */
+        .cs-table-card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        .cs-table-header {
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .cs-table-header__title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .cs-table-wrapper {
+            overflow-x: auto;
+        }
+        .cs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .cs-table thead tr {
+            background: #f8fafc;
+        }
+        .cs-th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: #64748b;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+            border-bottom: 1.5px solid #e2e8f0;
+        }
+        .cs-td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            vertical-align: top;
+            word-break: break-all;
+        }
+        .cs-td--id   { color: #94a3b8; font-size: 0.78rem; white-space: nowrap; }
+        .cs-td--time { white-space: nowrap; font-size: 0.83rem; }
+        .cs-td--wrap {
+            min-width: 120px;
+            max-width: 320px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .cs-table tbody tr:hover { background: #fef7f7; }
+        .cs-null  { color: #cbd5e1; }
+        .cs-empty {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        .cs-badge-yn {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .cs-badge-yn--y { background: #16a34a; }
+        .cs-badge-yn--n { background: #dc2626; }
+
+        /* ── 分頁 ─────────────────────────────── */
+        .cs-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #f1f5f9;
+            flex-wrap: wrap;
+        }
+        .cs-pagination__info {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .cs-pagination button {
+            padding: 0.4rem 1rem;
+            border-radius: 7px;
+            border: 1.5px solid #cbd5e1;
+            background: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #475569;
+            transition: all 0.2s;
+        }
+        .cs-pagination button:hover:not(:disabled) { background: #f1f5f9; }
+        .cs-pagination button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        /* ── Loading ─────────────────────────────── */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.18);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .cs-spinner {
+            width: 48px; height: 48px;
+            border: 5px solid #fff;
+            border-top-color: #ef4444;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── 錯誤訊息 ─────────────────────────────── */
+        #errorMsg {
+            display: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay"><div class="cs-spinner"></div></div>
+
+<div id="_layout_header"></div>
+<div id="_page_navBar"></div>
+
+<div class="container">
+
+    <!-- 錯誤訊息 -->
+    <div id="errorMsg"></div>
+
+    <!-- 篩選區 -->
+    <div class="cs-filter-card">
+        <div class="cs-filter-card__title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+            條件篩選
+        </div>
+        <div class="cs-filter-grid">
+            <div class="cs-filter-field">
+                <label>關鍵字搜尋</label>
+                <input type="text" id="filterKeyword"
+                       placeholder="中介檔名 / 台新系統代碼 / 系統中文名稱 / 業務主題 / AP組別"
+                       onkeydown="if(event.key==='Enter') doSearch()">
+            </div>
+        </div>
+        <div class="cs-filter-actions">
+            <button class="cs-btn cs-btn--primary" id="btnSearch" onclick="doSearch()">🔍 搜尋</button>
+            <button class="cs-btn cs-btn--ghost"   id="btnReset"  onclick="doReset()">↺ 清除條件</button>
+            <button class="cs-btn cs-btn--ghost"   id="btnExport" onclick="doExport()"
+                    style="background:#f0fdf4; color:#166534; border-color:#bbf7d0;">
+                📥 匯出 Excel
+            </button>
+            <div class="cs-page-size-wrap">
+                每頁顯示
+                <select id="pageSize" onchange="doSearch()">
+                    <option value="10">10 筆</option>
+                    <option value="20" selected>20 筆</option>
+                    <option value="50">50 筆</option>
+                    <option value="100">100 筆</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資料表格 -->
+    <div class="cs-table-card">
+        <div class="cs-table-header">
+            <span class="cs-table-header__title" id="tableTitle">查詢結果</span>
+        </div>
+        <div class="cs-table-wrapper">
+            <table class="cs-table">
+                <thead>
+                    <tr>
+                        <th class="cs-th">Row ID</th>
+                        <th class="cs-th">業務確認</th>
+                        <th class="cs-th">中介檔名</th>
+                        <th class="cs-th">台新系統代碼</th>
+                        <th class="cs-th">系統中文名稱</th>
+                        <th class="cs-th">業務主題</th>
+                        <th class="cs-th">檢查類別細項說明</th>
+                        <th class="cs-th">檢查類別細項說明補充</th>
+                        <th class="cs-th">檢核處理程式內容說明</th>
+                        <th class="cs-th">錯誤處理方式說明</th>
+                        <th class="cs-th">錯誤處理方式說明(補充)</th>
+                        <th class="cs-th">行動方式說明</th>
+                        <th class="cs-th">行動方式說明(補充)</th>
+                        <th class="cs-th">上下游影響及衝擊</th>
+                        <th class="cs-th">寫入目標</th>
+                        <th class="cs-th">自動驗證機制</th>
+                        <th class="cs-th">佐證文件補充說明</th>
+                        <th class="cs-th">中介檔負責人員</th>
+                        <th class="cs-th">AP人員</th>
+                        <th class="cs-th">AP組別</th>
+                        <th class="cs-th">建立者</th>
+                        <th class="cs-th">建立時間</th>
+                        <th class="cs-th">最後修改者</th>
+                        <th class="cs-th">最後修改時間</th>
+                    </tr>
+                </thead>
+                <tbody id="csTableBody">
+                    <tr>
+                        <td colspan="24" class="cs-empty">請點擊搜尋以載入資料</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="cs-pagination">
+            <span class="cs-pagination__info" id="pageInfo">—</span>
+            <button id="btnPrev" onclick="changePage(-1)" disabled>＜ 上一頁</button>
+            <button id="btnNext" onclick="changePage(1)"  disabled>下一頁 ＞</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="_layout_footer"></div>
+
+<script>
+window._layoutConfig = {
+    root: '../',
+    navBar: {
+        title: '匯入檢核總表',
+        backLinks: [{ href: '../index.html', text: '← 返回總覽' }]
+    }
+};
+</script>
+<script src="../js/authToken.js"></script>
+<script>
+  (function() { if (!window.getAuthToken()) { window.location.replace('../login.html'); } })();
+</script>
+<script src="../js/layout.js"></script>
+<script>
+'use strict';
+
+var _currentPage = 0;
+
+// ── 搜尋（重置頁碼）──────────────────────────────────────────────────────
+function doSearch() {
+    _currentPage = 0;
+    loadData();
+}
+
+// ── 清除條件 ──────────────────────────────────────────────────────────────
+function doReset() {
+    document.getElementById('filterKeyword').value = '';
+    document.getElementById('pageSize').value = '20';
+    _currentPage = 0;
+    loadData();
+}
+
+// ── 換頁 ─────────────────────────────────────────────────────────────────
+function changePage(delta) {
+    _currentPage += delta;
+    loadData();
+}
+
+// ── 載入資料 ──────────────────────────────────────────────────────────────
+function loadData() {
+    var keyword  = document.getElementById('filterKeyword').value.trim();
+    var pageSize = parseInt(document.getElementById('pageSize').value, 10);
+
+    var params = new URLSearchParams();
+    if (keyword) params.set('keyword', keyword);
+    params.set('page', _currentPage);
+    params.set('size', pageSize);
+
+    var overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+
+    window.authFetch('/eServiceA/dashboard/api/v2/check-sum/list?' + params.toString(), {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() }
+    })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            overlay.style.display = 'none';
+            if (!data.success) {
+                showError(data.message || '載入失敗');
+                return;
+            }
+            renderTable(data);
+        })
+        .catch(function(err) {
+            overlay.style.display = 'none';
+            showError('連線失敗：' + err.message);
+        });
+}
+
+// ── 渲染表格 ──────────────────────────────────────────────────────────────
+function renderTable(data) {
+    var tbody     = document.getElementById('csTableBody');
+    var pageInfo  = document.getElementById('pageInfo');
+    var btnPrev   = document.getElementById('btnPrev');
+    var btnNext   = document.getElementById('btnNext');
+    var tableTitle = document.getElementById('tableTitle');
+    var rows      = data.content || [];
+    var total     = data.totalCount || 0;
+    var totalPages = data.totalPages || 0;
+    var pageSize  = data.pageSize || 20;
+    var currPage  = data.currentPage || 0;
+
+    tableTitle.textContent = '查詢結果（共 ' + total + ' 筆）';
+
+    if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="24" class="cs-empty">查無資料</td></tr>';
+        pageInfo.textContent = '—';
+        btnPrev.disabled = true;
+        btnNext.disabled = true;
+        return;
+    }
+
+    var startNo = currPage * pageSize + 1;
+    var endNo   = Math.min(currPage * pageSize + rows.length, total);
+    pageInfo.textContent = '第 ' + startNo + ' ~ ' + endNo + ' 筆，共 ' + total + ' 筆 / 第 ' + (currPage + 1) + ' / ' + totalPages + ' 頁';
+
+    btnPrev.disabled = (currPage <= 0);
+    btnNext.disabled = (currPage >= totalPages - 1);
+
+    tbody.innerHTML = rows.map(function(r) {
+        return '<tr>' +
+            '<td class="cs-td cs-td--id">'   + esc(r.rowId)                       + '</td>' +
+            '<td class="cs-td">'              + ynBadge(r.businessConfirmed)        + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.intermediaryFileName)         + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.tsbSystemCode)                + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.systemChineseName)            + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.businessTopic)                + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.checkCategoryDetail)          + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.checkCategoryDetailSupplement)+ '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.checkProcessContent)          + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.errorHandlingDesc)            + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.errorHandlingDescSupplement)  + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.actionDesc)                   + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.actionDescSupplement)         + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.impactOnUpstreamDownstream)   + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.writeTarget)                  + '</td>' +
+            '<td class="cs-td">'              + ynBadge(r.hasAutoVerify)             + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.supportingDocSupplement)      + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.intermediaryFileOwner)         + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.apStaff)                       + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.apGroup)                       + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.createdBy)                     + '</td>' +
+            '<td class="cs-td cs-td--time">'  + esc(r.createdAt)                     + '</td>' +
+            '<td class="cs-td cs-td--wrap">'  + esc(r.updatedBy)                     + '</td>' +
+            '<td class="cs-td cs-td--time">'  + esc(r.updatedAt)                     + '</td>' +
+            '</tr>';
+    }).join('');
+}
+
+// ── 匯出 Excel（依目前搜尋條件）────────────────────────────────────────
+function doExport() {
+    var keyword = document.getElementById('filterKeyword').value.trim();
+    var btn     = document.getElementById('btnExport');
+
+    var params = new URLSearchParams();
+    if (keyword) params.set('keyword', keyword);
+
+    btn.disabled    = true;
+    btn.textContent = '⏳ 匯出中…';
+
+    window.authFetch('/eServiceA/dashboard/api/v2/check-sum/export?' + params.toString(), {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-XSRF-TOKEN': window.getCsrfToken() }
+    })
+        .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            var disposition = res.headers.get('Content-Disposition') || '';
+            var rfc5987 = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+            var rfc2231 = disposition.match(/filename="?([^";]+)"?/i);
+            var filename = rfc5987
+                ? decodeURIComponent(rfc5987[1])
+                : rfc2231 ? rfc2231[1] : '檢核總表匯出.xlsx';
+            return res.blob().then(function(blob) { return { blob: blob, filename: filename }; });
+        })
+        .then(function(result) {
+            var url = URL.createObjectURL(result.blob);
+            var a   = document.createElement('a');
+            a.href  = url;
+            a.download = result.filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        })
+        .catch(function(err) {
+            showError('匯出失敗：' + err.message);
+        })
+        .finally(function() {
+            btn.disabled    = false;
+            btn.textContent = '📥 匯出 Excel';
+        });
+}
+
+// ── 工具 ──────────────────────────────────────────────────────────────────
+function esc(val) {
+    if (val == null || val === '') return '<span class="cs-null">—</span>';
+    return String(val)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function ynBadge(val) {
+    if (val === 'Y') return '<span class="cs-badge-yn cs-badge-yn--y">Y</span>';
+    if (val === 'N') return '<span class="cs-badge-yn cs-badge-yn--n">N</span>';
+    return '<span class="cs-null">—</span>';
+}
+
+function showError(msg) {
+    var el = document.getElementById('errorMsg');
+    el.textContent = '操作失敗，請稍後再試或聯絡管理員';
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 6000);
+}
+
+// ── 頁面載入時自動搜尋 ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    loadData();
+});
+</script>
+</body>
+</html>
