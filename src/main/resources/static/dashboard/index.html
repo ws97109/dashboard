@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案進度追蹤系統</title>
+    
+    <link rel="stylesheet" href="fonts/fonts.css">
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/card.css">
+    <link rel="stylesheet" href="css/tooltip.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div id="tooltip" class="tooltip"></div>
+
+    <div id="_layout_header"></div>
+
+    <div class="dashboard dashboard--intro">
+        <div class="page-hero">
+            <div>
+                <h1 class="page-hero__title">專案進度總覽</h1>
+                <p class="page-hero__subtitle">即時掌握各階段任務的完成狀態</p>
+            </div>
+            <div class="page-hero__badge" id="heroBadge">—<small>整體</small></div>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+    </div>
+
+    <div class="dashboard">
+        <div class="dashboard__card">
+            <h1 class="card__title">專案階段進度</h1>
+            <div class="arrow-container" id="arrowContainer"></div>
+        </div>
+    </div>
+    <div class="dashboard">
+        <div class="dashboard__grid">
+            <div class="dashboard__card">
+                <h2 class="card__title">整體進度</h2>
+                <div class="pie-chart-container">
+                    <div class="pie-chart">
+                        <canvas id="pieChartCanvas" width="400" height="400"></canvas>
+                        <div class="pie-chart__center">
+                            <div class="pie-chart__percentage" id="overallPercentage">0%</div>
+                            <div class="pie-chart__label">整體完成度</div>
+                        </div>
+                    </div>
+                    <div class="pie-chart__legend" id="chartLegend"></div>
+                </div>
+            </div>
+
+            <div class="dashboard__card">
+                <h2 class="card__title">項目進度</h2>
+                <div class="bar-chart" id="barChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="_layout_footer"></div>
+
+    <script>
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'js/chart.min.js';
+            document.head.appendChild(script);
+        })();
+    </script>
+
+    <script>window._layoutConfig = { root: '' };</script>
+    <script src="js/authToken.js"></script>
+<script>
+  (function() { if (!window.getAuthToken()) { window.location.replace('login.html'); } })();
+</script>
+	<script src="js/layout.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/dataLoader.js"></script>
+    <script src="js/chartVisualizer.js"></script>
+    <script src="js/indexPage.js"></script>
+</body>
+</html>
